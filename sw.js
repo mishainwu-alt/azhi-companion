@@ -1,4 +1,4 @@
-const CACHE_NAME = "azhi-companion-v1";
+const CACHE_NAME = "azhi-companion-v3";
 const SHELL_ASSETS = [
   "./",
   "./index.html",
@@ -10,6 +10,7 @@ const SHELL_ASSETS = [
   "./assets/fonts/Wind-Regular_0.otf",
   "./assets/icons/icon-192.png",
   "./assets/icons/icon-512.png",
+  "./assets/preview/azhi-og.png",
 ];
 
 self.addEventListener("install", (event) => {

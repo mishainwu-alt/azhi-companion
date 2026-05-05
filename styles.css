@@ -51,6 +51,15 @@ button {
   padding: max(18px, env(safe-area-inset-top)) 16px max(18px, env(safe-area-inset-bottom));
 }
 
+.phone-shell.controls-open .observation-text {
+  top: clamp(28px, 6svh, 52px);
+  right: 28px;
+  left: 28px;
+  z-index: 25;
+  max-width: none;
+  text-align: center;
+}
+
 .companion-scene::before {
   content: "";
   position: absolute;
@@ -118,6 +127,9 @@ button {
   color: rgba(31, 29, 27, 0.82);
   transform: translateY(0);
   opacity: 1;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
   transition: opacity 0.28s ease, transform 0.28s ease;
 }
 
@@ -185,17 +197,38 @@ button {
 }
 
 .control-panel {
+  position: relative;
   display: grid;
-  gap: 12px;
+  gap: 10px;
   width: 100%;
-  max-height: min(76svh, 620px);
+  max-height: min(50svh, 440px);
   overflow: auto;
+  scrollbar-gutter: stable;
   border: 1.7px solid rgba(31, 29, 27, 0.76);
   border-radius: 22px 22px 8px 22px;
   padding: 14px;
   background: var(--panel);
   box-shadow: var(--shadow);
   backdrop-filter: blur(14px);
+}
+
+.panel-grabber {
+  justify-self: center;
+  width: 42px;
+  height: 5px;
+  border-radius: 999px;
+  background: rgba(31, 29, 27, 0.22);
+}
+
+.panel-close {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
 }
 
 .is-hidden {
@@ -312,6 +345,82 @@ h1 {
   object-fit: cover;
 }
 
+.dog-contract-panel {
+  overflow: hidden;
+}
+
+.dog-scene {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  padding: 4px 0 2px;
+}
+
+.shiba {
+  width: min(100%, 260px);
+  aspect-ratio: 320 / 190;
+}
+
+.dog-line,
+.dog-tail {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.dog-dot,
+.dog-bubbles circle {
+  fill: var(--ink);
+}
+
+.dog-tail {
+  transform-origin: 250px 78px;
+}
+
+.dog-scene.is-fed .dog-tail {
+  animation: tailWag 0.42s ease-in-out infinite;
+}
+
+.dog-scene.is-bath .dog-bubbles {
+  animation: bubbleFloat 1.2s ease-in-out infinite;
+}
+
+.dog-scene.is-phantom .shiba {
+  animation: tinyNod 0.9s ease-in-out infinite;
+}
+
+#dogStatus {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.dog-actions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.mini-action {
+  min-height: 38px;
+  border: 1px solid rgba(31, 29, 27, 0.18);
+  border-radius: 999px;
+  background: rgba(255, 250, 241, 0.72);
+  font-size: 13px;
+}
+
+@keyframes tailWag {
+  0%, 100% { transform: rotate(-4deg); }
+  50% { transform: rotate(7deg); }
+}
+
+@keyframes bubbleFloat {
+  0%, 100% { transform: translateY(0); opacity: 0.55; }
+  50% { transform: translateY(-8px); opacity: 1; }
+}
+
 .tool-dock {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
@@ -385,6 +494,12 @@ h1 {
     font-size: 24px;
   }
 
+  .phone-shell.controls-open .observation-text {
+    top: 28px;
+    right: 18px;
+    left: 18px;
+  }
+
   .control-bubble {
     right: 10px;
     bottom: 10px;
@@ -407,21 +522,22 @@ h1 {
   }
 
   .azhi-stage {
-    width: min(94vw, 980px);
-    min-height: min(82svh, 540px);
+    width: min(96vw, 1080px);
+    min-height: calc(100svh - 28px);
     display: grid;
-    grid-template-columns: minmax(260px, 0.95fr) minmax(320px, 1.05fr);
+    grid-template-columns: minmax(300px, 1fr) minmax(300px, 0.92fr);
     align-items: center;
     justify-items: stretch;
-    gap: 24px;
+    gap: clamp(18px, 4vw, 56px);
   }
 
   .manga-panel {
     grid-column: 2;
-    justify-self: stretch;
+    justify-self: center;
     align-self: center;
-    width: 100%;
-    min-height: min(78svh, 520px);
+    width: min(42vw, 480px);
+    height: min(76svh, 520px);
+    min-height: 0;
     place-items: center;
   }
 
@@ -430,8 +546,8 @@ h1 {
   }
 
   .azhi {
-    width: min(44vw, 430px);
-    max-height: min(72svh, 470px);
+    width: 104%;
+    max-height: 86%;
   }
 
   .observation-text {
@@ -439,12 +555,21 @@ h1 {
     position: relative;
     top: auto;
     right: auto;
-    align-self: start;
-    justify-self: end;
-    margin-top: 8vh;
-    max-width: min(38vw, 420px);
-    font-size: clamp(30px, 5vw, 46px);
+    align-self: center;
+    justify-self: center;
+    margin-top: 0;
+    max-width: min(42vw, 520px);
+    font-size: clamp(30px, 4.6vw, 50px);
     line-height: 1.45;
+    text-align: left;
+  }
+
+  .phone-shell.controls-open .observation-text {
+    top: auto;
+    right: auto;
+    left: auto;
+    max-width: min(42vw, 520px);
+    text-align: left;
   }
 
   .control-bubble {
@@ -467,7 +592,7 @@ h1 {
   }
 
   .control-panel {
-    max-height: min(82svh, 520px);
+    max-height: min(70svh, 430px);
   }
 }
 

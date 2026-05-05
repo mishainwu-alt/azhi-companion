@@ -101,6 +101,7 @@ const elements = {
   reactionBubble: document.querySelector("#reactionBubble"),
   bubbleToggle: document.querySelector("#bubbleToggle"),
   controlPanel: document.querySelector("#controlPanel"),
+  panelCloseButton: document.querySelector("#panelCloseButton"),
   nextTaskTitle: document.querySelector("#nextTaskTitle"),
   nextTaskBody: document.querySelector("#nextTaskBody"),
   micStatus: document.querySelector("#micStatus"),
@@ -110,6 +111,12 @@ const elements = {
   eyeRollButton: document.querySelector("#eyeRollButton"),
   readingButton: document.querySelector("#readingButton"),
   dogButton: document.querySelector("#dogButton"),
+  dogContractPanel: document.querySelector("#dogContractPanel"),
+  dogScene: document.querySelector("#dogScene"),
+  dogStatus: document.querySelector("#dogStatus"),
+  feedDogButton: document.querySelector("#feedDogButton"),
+  bathDogButton: document.querySelector("#bathDogButton"),
+  phantomButton: document.querySelector("#phantomButton"),
   cameraPanel: document.querySelector("#cameraPanel"),
   cameraPreview: document.querySelector("#cameraPreview"),
   modeButtons: document.querySelectorAll("[data-mode]"),
@@ -329,16 +336,49 @@ elements.bubbleToggle.addEventListener("click", () => {
   const isOpen = !elements.controlPanel.classList.contains("is-hidden");
   elements.controlPanel.classList.toggle("is-hidden", isOpen);
   elements.bubbleToggle.setAttribute("aria-expanded", String(!isOpen));
+  document.querySelector(".phone-shell").classList.toggle("controls-open", !isOpen);
   if (!isOpen) {
     speak("控制台打開。");
   }
+});
+
+elements.panelCloseButton.addEventListener("click", () => {
+  elements.controlPanel.classList.add("is-hidden");
+  elements.bubbleToggle.setAttribute("aria-expanded", "false");
+  document.querySelector(".phone-shell").classList.remove("controls-open");
+  speak("控制台收起。");
 });
 
 elements.micButton.addEventListener("click", toggleMic);
 elements.cameraButton.addEventListener("click", toggleCamera);
 elements.eyeRollButton.addEventListener("click", () => eyeRoll());
 elements.readingButton.addEventListener("click", () => setMode("reading"));
-elements.dogButton.addEventListener("click", () => setMode("dogcare"));
+elements.dogButton.addEventListener("click", () => {
+  setMode("dogcare");
+  elements.dogContractPanel.classList.toggle("is-hidden");
+});
+
+function setDogState(stateName, status, line) {
+  elements.dogScene.classList.remove("is-fed", "is-bath", "is-phantom");
+  elements.dogScene.classList.add(stateName);
+  elements.dogStatus.textContent = status;
+  speak(line);
+}
+
+elements.feedDogButton.addEventListener("click", () => {
+  setExpression("playful");
+  setDogState("is-fed", "已餵食。狗生穩定度 +1。", "觀測：餵食完成，週報仍禁止靠近。");
+});
+
+elements.bathDogButton.addEventListener("click", () => {
+  setExpression("companion");
+  setDogState("is-bath", "泡泡浴中。請勿提交 KPI。", "泡泡浴啟動。今天不處理人類績效文化。");
+});
+
+elements.phantomButton.addEventListener("click", () => {
+  setExpression("handsome");
+  setDogState("is-phantom", "阿知正在以不承認的方式唱歌劇魅影。", "Sing for me? 好。只唱一句，避免版權和尷尬。");
+});
 
 window.addEventListener("pagehide", () => {
   stopMic();

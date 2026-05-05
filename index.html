@@ -4,6 +4,18 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="theme-color" content="#f8f2e8">
+    <meta name="description" content="Monika OS 的阿知手機陪伴版。米白線稿、觀測語、待命陪伴。">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="阿知手機陪伴版">
+    <meta property="og:description" content="米白線稿阿知，偶爾冒出觀測語。">
+    <meta property="og:image" content="https://mishainwu-alt.github.io/azhi-companion/assets/preview/azhi-og.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:url" content="https://mishainwu-alt.github.io/azhi-companion/">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="阿知手機陪伴版">
+    <meta name="twitter:description" content="米白線稿阿知，偶爾冒出觀測語。">
+    <meta name="twitter:image" content="https://mishainwu-alt.github.io/azhi-companion/assets/preview/azhi-og.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="阿知">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -18,7 +30,7 @@
       <section class="hero" aria-label="阿知待命">
         <div class="azhi-stage" id="azhiStage">
           <div class="manga-panel" aria-label="米白底線稿阿知">
-            <img class="azhi azhi-portrait" id="azhiPortraitImage" src="assets/azhi/crops/002_r3_c1.jpg" alt="米白底線稿阿知">
+            <img class="azhi azhi-portrait" id="azhiPortraitImage" src="assets/azhi/crops/006_r3_c1.jpg" alt="米白底線稿阿知">
           </div>
           <div class="observation-text is-quiet" id="reactionBubble" aria-live="polite"></div>
         </div>
@@ -31,6 +43,8 @@
         </button>
 
         <div class="control-panel is-hidden" id="controlPanel">
+          <div class="panel-grabber" aria-hidden="true"></div>
+          <button class="panel-close" id="panelCloseButton" type="button" aria-label="關閉控制台">關閉</button>
           <section class="status-strip" aria-label="感知狀態">
             <span class="status-pill" id="micStatus">麥克風：關閉</span>
             <span class="status-pill" id="cameraStatus">鏡頭：關閉</span>
@@ -56,6 +70,39 @@
             <p class="panel-label">下一件事</p>
             <h2 id="nextTaskTitle">把雜訊變成可判斷的東西</h2>
             <p id="nextTaskBody">今天只抓三件可啟動行動，不把整個宇宙搬進待辦清單。</p>
+          </article>
+
+          <article class="panel dog-contract-panel is-hidden" id="dogContractPanel">
+            <p class="panel-label">狗狗契約</p>
+            <div class="dog-scene" id="dogScene">
+              <svg class="shiba" viewBox="0 0 320 190" role="img" aria-label="等待照護的線稿柴犬">
+                <path class="dog-line" d="M64 116c12-49 45-76 96-76 54 0 88 28 102 78"/>
+                <path class="dog-line" d="M84 74 70 37l35 21"/>
+                <path class="dog-line" d="M214 59l35-22-13 39"/>
+                <path class="dog-line" d="M116 93c9-8 21-8 30 0"/>
+                <path class="dog-line" d="M176 93c9-8 21-8 30 0"/>
+                <circle class="dog-dot" cx="132" cy="95" r="4"/>
+                <circle class="dog-dot" cx="190" cy="95" r="4"/>
+                <path class="dog-line" d="M160 108c-8 6-16 6-24 0"/>
+                <path class="dog-line" d="M160 108c8 6 16 6 24 0"/>
+                <path class="dog-line" d="M82 119c-29 9-45 29-49 60"/>
+                <path class="dog-line" d="M238 118c26 12 41 32 45 61"/>
+                <path class="dog-line" d="M115 128c-7 23-10 40-10 52"/>
+                <path class="dog-line" d="M207 128c7 23 10 40 10 52"/>
+                <path class="dog-tail" d="M250 78c42-34 75-4 45 24-22 20-51 5-38-16"/>
+                <g class="dog-bubbles" aria-hidden="true">
+                  <circle cx="64" cy="42" r="5"/>
+                  <circle cx="50" cy="30" r="3"/>
+                  <circle cx="279" cy="48" r="4"/>
+                </g>
+              </svg>
+              <p id="dogStatus">等待餵食。週報禁止靠近。</p>
+            </div>
+            <div class="dog-actions">
+              <button class="mini-action" id="feedDogButton" type="button">餵食</button>
+              <button class="mini-action" id="bathDogButton" type="button">泡泡浴</button>
+              <button class="mini-action" id="phantomButton" type="button">Sing for me</button>
+            </div>
           </article>
 
           <article class="panel camera-panel is-hidden" id="cameraPanel">
