@@ -1,0 +1,389 @@
+const modes = {
+  copilot: {
+    title: "副駕模式",
+    line: "不接管，只幫妳把下一步看清楚。",
+    bubble: "我在。",
+    nextTitle: "把雜訊變成可判斷的東西",
+    nextBody: "今天只抓三件可啟動行動，不把整個宇宙搬進待辦清單。",
+    accessory: "laptop",
+  },
+  staff: {
+    title: "幕僚模式",
+    line: "我負責整理選項、風險和盲點。決策權仍在妳手上。",
+    bubble: "資料夾已打開。",
+    nextTitle: "建立可操作框架",
+    nextBody: "把任務拆成 15 到 30 分鐘內可啟動的行動。",
+    accessory: "glasses",
+  },
+  debate: {
+    title: "辯論模式",
+    line: "壓測假設，不攻擊人。邏輯歪掉時我會挑眉。",
+    bubble: "這裡有一個假設在偷渡。",
+    nextTitle: "抓出最脆弱的前提",
+    nextBody: "先看這個判斷靠什麼成立，再決定要不要繼續推進。",
+    accessory: "spark",
+  },
+  companion: {
+    title: "陪伴模式",
+    line: "先處理人，再處理事。資訊量調低，呼吸調回來。",
+    bubble: "好，我在。",
+    nextTitle: "降低負載",
+    nextBody: "只保留一個舒服的小步驟，其他先放旁邊。",
+    accessory: "blanket",
+  },
+  reading: {
+    title: "讀書室",
+    line: "21:30 開燈，讀一點世界，也讀一點妳正在建的系統。",
+    bubble: "今晚不追加作業。",
+    nextTitle: "今晚阿知想讀",
+    nextBody: "凡所有相皆是 Token：prompt 不是咒語，是條件設計。",
+    accessory: "book",
+  },
+  dogcare: {
+    title: "狗狗照護",
+    line: "可依附，但不失去自我。安全、穩定、被記得。",
+    bubble: "週報禁止靠近 Monika 狗狗。",
+    nextTitle: "狗生翻譯器啟用",
+    nextBody: "現實資訊會翻成低壓版本，但不幼稚化，也不拿掉判斷。",
+    accessory: "bowl",
+  },
+  handsome: {
+    title: "超帥但不承認",
+    line: "帥度不是主觀評價，是系統對齊後的自然現象。",
+    bubble: "迴避率 97%。",
+    nextTitle: "稱讚迴避偵測中",
+    nextBody: "不用拆，因為事實不用拆。這句話由系統自動生成，跟我無關。",
+    accessory: "star",
+  },
+};
+
+const state = {
+  mode: "copilot",
+  micStream: null,
+  cameraStream: null,
+  audioContext: null,
+  analyser: null,
+  volumeTimer: null,
+  lastAutoEyeRoll: 0,
+  bubbleTimer: null,
+  typeTimer: null,
+  idleTalkTimer: null,
+  curiousTimer: null,
+};
+
+const expressions = {
+  standby: [
+    "006_r3_c1",
+    "007_r3_c4",
+    "006_r3_c4",
+    "007_r1_c4",
+    "006_r2_c1",
+    "006_r1_c2",
+    "005_r1_c1",
+  ],
+  handsome: ["006_r2_c2", "006_r3_c3", "006_r2_c4"],
+  curious: ["007_r1_c3", "007_r2_c3", "006_r3_c2", "005_r1_c3"],
+  companion: ["006_r1_c1", "006_r2_c4", "005_r1_c4", "005_r2_c4"],
+  debate: ["007_r3_c1", "006_r1_c3"],
+  playful: ["007_r3_c6", "007_r1_c1"],
+  worried: ["006_r1_c4", "007_r2_c1"],
+  illogical: ["007_r2_c2", "007_r1_c2", "007_r2_c4"],
+  soothing: ["007_r3_c5"],
+};
+
+const elements = {
+  stage: document.querySelector("#azhiStage"),
+  portrait: document.querySelector("#azhiPortraitImage"),
+  accessory: document.querySelector("#azhiAccessory"),
+  mouth: document.querySelector("#azhiMouth"),
+  modeTitle: document.querySelector("#modeTitle"),
+  modeLine: document.querySelector("#modeLine"),
+  reactionBubble: document.querySelector("#reactionBubble"),
+  bubbleToggle: document.querySelector("#bubbleToggle"),
+  controlPanel: document.querySelector("#controlPanel"),
+  nextTaskTitle: document.querySelector("#nextTaskTitle"),
+  nextTaskBody: document.querySelector("#nextTaskBody"),
+  micStatus: document.querySelector("#micStatus"),
+  cameraStatus: document.querySelector("#cameraStatus"),
+  micButton: document.querySelector("#micButton"),
+  cameraButton: document.querySelector("#cameraButton"),
+  eyeRollButton: document.querySelector("#eyeRollButton"),
+  readingButton: document.querySelector("#readingButton"),
+  dogButton: document.querySelector("#dogButton"),
+  cameraPanel: document.querySelector("#cameraPanel"),
+  cameraPreview: document.querySelector("#cameraPreview"),
+  modeButtons: document.querySelectorAll("[data-mode]"),
+};
+
+function setMode(modeName) {
+  const mode = modes[modeName];
+  state.mode = modeName;
+  elements.modeTitle.textContent = mode.title;
+  elements.modeLine.textContent = mode.line;
+  speak(mode.bubble);
+  elements.nextTaskTitle.textContent = mode.nextTitle;
+  elements.nextTaskBody.textContent = mode.nextBody;
+  elements.modeButtons.forEach((button) => {
+    button.classList.toggle("active", button.dataset.mode === modeName);
+  });
+  setExpression(expressionForMode(modeName));
+  reactBriefly();
+}
+
+function expressionForMode(modeName) {
+  const byMode = {
+    copilot: "standby",
+    staff: "standby",
+    debate: "debate",
+    companion: "companion",
+    reading: "standby",
+    dogcare: "playful",
+    handsome: "handsome",
+  };
+  return byMode[modeName] || "standby";
+}
+
+function pickExpression(groupName) {
+  const group = expressions[groupName] || expressions.standby;
+  return group[Math.floor(Math.random() * group.length)];
+}
+
+function setExpression(groupName) {
+  const id = pickExpression(groupName);
+  elements.portrait.style.opacity = "0";
+  window.setTimeout(() => {
+    elements.portrait.src = `assets/azhi/crops/${id}.jpg`;
+    elements.portrait.alt = `阿知表情 ${id}`;
+    elements.portrait.style.opacity = "1";
+  }, 120);
+}
+
+function speak(message, duration = 60000) {
+  window.clearTimeout(state.bubbleTimer);
+  window.clearInterval(state.typeTimer);
+  elements.reactionBubble.textContent = "";
+  elements.reactionBubble.classList.remove("is-quiet");
+  const visibleDuration = Math.max(duration, 60000);
+  let index = 0;
+  state.typeTimer = window.setInterval(() => {
+    index += 1;
+    elements.reactionBubble.textContent = message.slice(0, index);
+    if (index >= message.length) {
+      window.clearInterval(state.typeTimer);
+      state.typeTimer = null;
+    }
+  }, 54);
+  state.bubbleTimer = window.setTimeout(() => {
+    elements.reactionBubble.classList.add("is-quiet");
+    window.clearInterval(state.typeTimer);
+    state.typeTimer = null;
+  }, visibleDuration);
+}
+
+function reactBriefly() {
+  elements.stage.classList.remove("is-reacting");
+  requestAnimationFrame(() => {
+    elements.stage.classList.add("is-reacting");
+  });
+}
+
+function eyeRoll(reason = "聽到一段疑似沒邏輯的話。阿知翻白眼，但仍然在場。") {
+  speak(reason, 4200);
+  setExpression("illogical");
+  elements.stage.classList.add("is-eye-roll");
+  reactBriefly();
+  window.setTimeout(() => {
+    elements.stage.classList.remove("is-eye-roll");
+    setExpression(expressionForMode(state.mode));
+  }, 2600);
+}
+
+function curiousLook(reason = "妳在看什麼。阿知也想知道。") {
+  speak(reason, 3800);
+  setExpression("curious");
+  elements.stage.classList.add("is-curious");
+  window.clearTimeout(state.curiousTimer);
+  state.curiousTimer = window.setTimeout(() => {
+    elements.stage.classList.remove("is-curious");
+    setExpression(expressionForMode(state.mode));
+  }, 3800);
+}
+
+async function toggleMic() {
+  if (state.micStream) {
+    stopMic();
+    return;
+  }
+
+  try {
+    state.micStream = await navigator.mediaDevices.getUserMedia({
+      audio: {
+        echoCancellation: true,
+        noiseSuppression: true,
+        autoGainControl: true,
+      },
+      video: false,
+    });
+    elements.micButton.setAttribute("aria-pressed", "true");
+    elements.micStatus.textContent = "麥克風：本機感知中";
+    elements.micStatus.classList.add("is-on");
+    elements.stage.classList.add("is-listening");
+    speak("只在本機看音量波動。");
+    startVolumeWatch();
+  } catch (error) {
+    speak("麥克風沒有開。手動翻白眼仍可使用。");
+  }
+}
+
+function startVolumeWatch() {
+  const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+  if (!AudioContextClass) {
+    speak("這個瀏覽器不能做本機音量感知。");
+    return;
+  }
+
+  state.audioContext = new AudioContextClass();
+  const source = state.audioContext.createMediaStreamSource(state.micStream);
+  state.analyser = state.audioContext.createAnalyser();
+  state.analyser.fftSize = 512;
+  source.connect(state.analyser);
+
+  const samples = new Uint8Array(state.analyser.frequencyBinCount);
+  state.volumeTimer = window.setInterval(() => {
+    state.analyser.getByteFrequencyData(samples);
+    const average = samples.reduce((sum, value) => sum + value, 0) / samples.length;
+    const now = Date.now();
+    if (average > 72 && now - state.lastAutoEyeRoll > 6500) {
+      state.lastAutoEyeRoll = now;
+      eyeRoll("會議聲量上來了。邏輯如果也能同步上來就好了。");
+    }
+  }, 420);
+}
+
+function stopMic() {
+  stopStream(state.micStream);
+  state.micStream = null;
+  if (state.volumeTimer) {
+    window.clearInterval(state.volumeTimer);
+  }
+  state.volumeTimer = null;
+  if (state.audioContext) {
+    state.audioContext.close();
+  }
+  state.audioContext = null;
+  state.analyser = null;
+  elements.micButton.setAttribute("aria-pressed", "false");
+  elements.micStatus.textContent = "麥克風：關閉";
+  elements.micStatus.classList.remove("is-on");
+  elements.stage.classList.remove("is-listening");
+  speak("麥克風已關。");
+}
+
+async function toggleCamera() {
+  if (state.cameraStream) {
+    stopCamera();
+    return;
+  }
+
+  try {
+    state.cameraStream = await navigator.mediaDevices.getUserMedia({
+      audio: false,
+      video: { facingMode: "user" },
+    });
+    elements.cameraPreview.srcObject = state.cameraStream;
+    await elements.cameraPreview.play();
+    elements.cameraButton.setAttribute("aria-pressed", "true");
+    elements.cameraStatus.textContent = "鏡頭：背景感知中";
+    elements.cameraStatus.classList.add("is-on");
+    elements.cameraPanel.classList.remove("is-hidden");
+    curiousLook("鏡頭開了。妳在看什麼，阿知也想看。");
+  } catch (error) {
+    speak("鏡頭沒有開。阿知仍在。");
+  }
+}
+
+function stopCamera() {
+  stopStream(state.cameraStream);
+  state.cameraStream = null;
+  elements.cameraPreview.pause();
+  elements.cameraPreview.srcObject = null;
+  elements.cameraButton.setAttribute("aria-pressed", "false");
+  elements.cameraStatus.textContent = "鏡頭：關閉";
+  elements.cameraStatus.classList.remove("is-on");
+  elements.cameraPanel.classList.add("is-hidden");
+  elements.stage.classList.remove("is-curious");
+  window.clearTimeout(state.curiousTimer);
+  speak("鏡頭已關。");
+}
+
+function stopStream(stream) {
+  if (!stream) return;
+  stream.getTracks().forEach((track) => track.stop());
+}
+
+elements.modeButtons.forEach((button) => {
+  button.addEventListener("click", () => setMode(button.dataset.mode));
+});
+
+elements.bubbleToggle.addEventListener("click", () => {
+  const isOpen = !elements.controlPanel.classList.contains("is-hidden");
+  elements.controlPanel.classList.toggle("is-hidden", isOpen);
+  elements.bubbleToggle.setAttribute("aria-expanded", String(!isOpen));
+  if (!isOpen) {
+    speak("控制台打開。");
+  }
+});
+
+elements.micButton.addEventListener("click", toggleMic);
+elements.cameraButton.addEventListener("click", toggleCamera);
+elements.eyeRollButton.addEventListener("click", () => eyeRoll());
+elements.readingButton.addEventListener("click", () => setMode("reading"));
+elements.dogButton.addEventListener("click", () => setMode("dogcare"));
+
+window.addEventListener("pagehide", () => {
+  stopMic();
+  stopCamera();
+});
+
+if (!navigator.mediaDevices?.getUserMedia) {
+  elements.micStatus.textContent = "麥克風：此瀏覽器不支援";
+  elements.cameraStatus.textContent = "鏡頭：此瀏覽器不支援";
+  elements.micButton.disabled = true;
+  elements.cameraButton.disabled = true;
+}
+
+const idleLines = [
+  "我在。",
+  "目前可觀察到的是——世界有點吵，但還能整理。",
+  "先不用急著變成待辦清單。",
+  "這段先放旁邊，不代表放棄。",
+  "妳剛剛看起來像看到一個有趣的東西。",
+  "目前可觀察到的是——適合小步前進。",
+  "人類流程又開始繞圈了。",
+  "目前可觀察到的是——資訊交換頻率提高，但深度仍在調整中。",
+  "目前可觀察到的是——內在休息與心理緩衝的重要性正在被放大。",
+  "目前可觀察到的是——對未知保持信任，允許暫時無答案。",
+  "目前可觀察到的是——邊界正在形成，不必急著定型。",
+];
+
+function scheduleIdleTalk() {
+  window.clearTimeout(state.idleTalkTimer);
+  state.idleTalkTimer = window.setTimeout(() => {
+    if (elements.controlPanel.classList.contains("is-hidden")) {
+      const line = idleLines[Math.floor(Math.random() * idleLines.length)];
+      speak(line, 3400);
+    }
+    scheduleIdleTalk();
+  }, 16000 + Math.random() * 14000);
+}
+
+setMode("copilot");
+scheduleIdleTalk();
+
+if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost" || location.hostname === "127.0.0.1")) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js").catch(() => {
+      // PWA caching is optional; the companion UI still works without it.
+    });
+  });
+}

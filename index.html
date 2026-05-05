@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#f8f2e8">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="阿知">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <title>阿知手機陪伴版</title>
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="icon" href="icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="phone-shell companion-scene" aria-label="阿知手機陪伴版">
+      <section class="hero" aria-label="阿知待命">
+        <div class="azhi-stage" id="azhiStage">
+          <div class="manga-panel" aria-label="米白底線稿阿知">
+            <img class="azhi azhi-portrait" id="azhiPortraitImage" src="assets/azhi/crops/002_r3_c1.jpg" alt="米白底線稿阿知">
+          </div>
+          <div class="observation-text is-quiet" id="reactionBubble" aria-live="polite"></div>
+        </div>
+      </section>
+
+      <section class="control-bubble" aria-label="阿知控制泡泡">
+        <button class="bubble-toggle" id="bubbleToggle" type="button" aria-expanded="false" aria-controls="controlPanel">
+          <span aria-hidden="true">•••</span>
+          <small>阿知</small>
+        </button>
+
+        <div class="control-panel is-hidden" id="controlPanel">
+          <section class="status-strip" aria-label="感知狀態">
+            <span class="status-pill" id="micStatus">麥克風：關閉</span>
+            <span class="status-pill" id="cameraStatus">鏡頭：關閉</span>
+          </section>
+
+          <div class="mode-copy">
+            <p class="eyebrow">目前模式</p>
+            <h1 id="modeTitle">副駕模式</h1>
+            <p id="modeLine">不接管，只幫妳把下一步看清楚。</p>
+          </div>
+
+          <section class="mode-dock" aria-label="阿知模式切換">
+            <button class="mode-chip active" data-mode="copilot">副駕</button>
+            <button class="mode-chip" data-mode="staff">幕僚</button>
+            <button class="mode-chip" data-mode="debate">辯論</button>
+            <button class="mode-chip" data-mode="companion">陪伴</button>
+            <button class="mode-chip" data-mode="reading">讀書室</button>
+            <button class="mode-chip" data-mode="dogcare">狗狗照護</button>
+            <button class="mode-chip" data-mode="handsome">超帥</button>
+          </section>
+
+          <article class="panel next-panel">
+            <p class="panel-label">下一件事</p>
+            <h2 id="nextTaskTitle">把雜訊變成可判斷的東西</h2>
+            <p id="nextTaskBody">今天只抓三件可啟動行動，不把整個宇宙搬進待辦清單。</p>
+          </article>
+
+          <article class="panel camera-panel is-hidden" id="cameraPanel">
+            <p class="panel-label">背景感知</p>
+            <video id="cameraPreview" playsinline muted></video>
+            <p id="cameraNote">鏡頭只做前景預覽，不保存、不辨識。</p>
+          </article>
+
+          <nav class="tool-dock" aria-label="工具列">
+            <button class="tool-button" id="micButton" type="button" aria-pressed="false">
+              <span aria-hidden="true">Mic</span>
+              <small>麥克風</small>
+            </button>
+            <button class="tool-button" id="cameraButton" type="button" aria-pressed="false">
+              <span aria-hidden="true">Cam</span>
+              <small>鏡頭</small>
+            </button>
+            <button class="tool-button primary" id="eyeRollButton" type="button">
+              <span aria-hidden="true">Eye</span>
+              <small>翻白眼</small>
+            </button>
+            <button class="tool-button" id="readingButton" type="button">
+              <span aria-hidden="true">Book</span>
+              <small>讀書室</small>
+            </button>
+            <button class="tool-button" id="dogButton" type="button">
+              <span aria-hidden="true">Dog</span>
+              <small>照護</small>
+            </button>
+          </nav>
+        </div>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
