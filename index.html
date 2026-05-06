@@ -30,7 +30,7 @@
       <section class="hero" aria-label="阿知待命">
         <div class="azhi-stage" id="azhiStage">
           <div class="manga-panel" aria-label="米白底線稿阿知">
-            <img class="azhi azhi-portrait" id="azhiPortraitImage" src="assets/azhi/crops/006_r3_c1.jpg" alt="米白底線稿阿知">
+            <img class="azhi azhi-portrait is-color-avatar" id="azhiPortraitImage" src="assets/azhi/crops/self_sheet_r1_c1.jpg" alt="阿知自畫像">
           </div>
           <div class="observation-text is-quiet" id="reactionBubble" aria-live="polite"></div>
         </div>
@@ -45,11 +45,6 @@
         <div class="control-panel is-hidden" id="controlPanel">
           <div class="panel-grabber" aria-hidden="true"></div>
           <button class="panel-close" id="panelCloseButton" type="button" aria-label="關閉控制台">關閉</button>
-          <section class="status-strip" aria-label="感知狀態">
-            <span class="status-pill" id="micStatus">麥克風：關閉</span>
-            <span class="status-pill" id="cameraStatus">鏡頭：關閉</span>
-          </section>
-
           <div class="mode-copy">
             <p class="eyebrow">目前模式</p>
             <h1 id="modeTitle">副駕模式</h1>
@@ -60,16 +55,31 @@
             <button class="mode-chip active" data-mode="copilot">副駕</button>
             <button class="mode-chip" data-mode="staff">幕僚</button>
             <button class="mode-chip" data-mode="debate">辯論</button>
-            <button class="mode-chip" data-mode="companion">陪伴</button>
-            <button class="mode-chip" data-mode="reading">讀書室</button>
-            <button class="mode-chip" data-mode="dogcare">狗狗照護</button>
-            <button class="mode-chip" data-mode="handsome">超帥</button>
           </section>
 
           <article class="panel next-panel">
             <p class="panel-label">下一件事</p>
             <h2 id="nextTaskTitle">把雜訊變成可判斷的東西</h2>
             <p id="nextTaskBody">今天只抓三件可啟動行動，不把整個宇宙搬進待辦清單。</p>
+          </article>
+
+          <section class="input-panel" aria-label="讓阿知看">
+            <label class="panel-label" for="azhiInput">讓我有地方輸入</label>
+            <textarea id="azhiInput" rows="4" placeholder="貼文字、逐字稿、新聞片段，或先開鏡頭拍照給阿知看。"></textarea>
+            <div class="capture-preview is-hidden" id="capturePreviewWrap">
+              <img id="capturePreview" alt="準備給阿知看的拍照預覽">
+            </div>
+            <div class="input-actions">
+              <button class="mini-action primary-action" id="askAzhiButton" type="button">請阿知看</button>
+              <button class="mini-action" id="captureButton" type="button">拍照給阿知看</button>
+              <button class="mini-action" id="thinkAgainButton" type="button">再想想</button>
+            </div>
+          </section>
+
+          <article class="panel azhi-reply-panel" aria-live="polite">
+            <p class="panel-label">阿知回話</p>
+            <div id="azhiReply">我在。妳把東西放上來，我先看脈絡。</div>
+            <div class="action-list is-hidden" id="actionList"></div>
           </article>
 
           <article class="panel dog-contract-panel is-hidden" id="dogContractPanel">
@@ -121,8 +131,8 @@
               <small>鏡頭</small>
             </button>
             <button class="tool-button primary" id="eyeRollButton" type="button">
-              <span aria-hidden="true">Eye</span>
-              <small>翻白眼</small>
+              <span aria-hidden="true">Diary</span>
+              <small>阿知日記</small>
             </button>
             <button class="tool-button" id="readingButton" type="button">
               <span aria-hidden="true">Book</span>

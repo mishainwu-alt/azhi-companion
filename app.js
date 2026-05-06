@@ -69,26 +69,33 @@ const state = {
   typeTimer: null,
   idleTalkTimer: null,
   curiousTimer: null,
+  transcriptRecognition: null,
+  capturedImage: null,
 };
 
 const expressions = {
   standby: [
-    "006_r3_c1",
-    "007_r3_c4",
-    "006_r3_c4",
-    "007_r1_c4",
-    "006_r2_c1",
-    "006_r1_c2",
-    "005_r1_c1",
+    "self_sheet_r1_c1",
+    "self_sheet_r1_c2",
+    "self_sheet_r1_c3",
+    "self_sheet_r2_c1",
+    "self_sheet_r2_c2",
+    "self_sheet_r3_c3",
+    "self_sheet_r3_c4",
+    "self_pack2_r1_c1",
+    "self_pack2_r2_c1",
+    "self_pack2_r2_c2",
+    "self_pack2_r2_c5",
   ],
-  handsome: ["006_r2_c2", "006_r3_c3", "006_r2_c4"],
-  curious: ["007_r1_c3", "007_r2_c3", "006_r3_c2", "005_r1_c3"],
-  companion: ["006_r1_c1", "006_r2_c4", "005_r1_c4", "005_r2_c4"],
-  debate: ["007_r3_c1", "006_r1_c3"],
-  playful: ["007_r3_c6", "007_r1_c1"],
-  worried: ["006_r1_c4", "007_r2_c1"],
-  illogical: ["007_r2_c2", "007_r1_c2", "007_r2_c4"],
-  soothing: ["007_r3_c5"],
+  handsome: ["self_sheet_r1_c1", "self_sheet_r2_c1", "self_sheet_r2_c2", "self_sheet_r2_c3", "self_sheet_r2_c4", "self_sheet_r3_c4", "self_fighting", "self_pack2_r1_c5", "self_pack2_r2_c2", "self_pack2_r3_c4", "self_pack2_r3_c5"],
+  curious: ["self_sheet_r1_c2", "self_sheet_r1_c3", "self_sheet_r3_c3", "self_sheet_r3_c4", "self_pack2_r1_c2", "self_pack2_r1_c3", "self_pack2_r2_c4"],
+  companion: ["self_sheet_r1_c1", "self_sheet_r1_c2", "self_sheet_r2_c1", "self_sheet_r2_c2", "self_sheet_r3_c4", "self_pack2_r2_c1", "self_pack2_r2_c2", "self_pack2_r3_c2", "self_pack2_r3_c5"],
+  debate: ["self_nope_r2_c1", "self_nope_r2_c2", "self_sheet_r3_c1", "self_sheet_r3_c2", "self_pack2_r1_c4", "self_pack2_r2_c3", "self_pack2_r3_c3", "self_pack2_r3_c4"],
+  playful: ["self_fighting", "self_sheet_r2_c2", "self_sheet_r2_c4", "self_sheet_r3_c3", "self_sheet_r3_c4", "self_pack2_r2_c2", "self_pack2_r2_c4", "self_pack2_r3_c5"],
+  worried: ["self_sheet_r1_c4", "self_nope_r1_c2", "self_sheet_r3_c3", "self_pack2_r1_c3", "self_pack2_r2_c5"],
+  illogical: ["self_nope_r1_c1", "self_nope_r1_c2", "self_nope_r2_c1", "self_nope_r2_c2", "self_pack2_r1_c2", "self_pack2_r1_c3", "self_pack2_r1_c4", "self_pack2_r3_c4"],
+  soothing: ["self_sheet_r1_c1", "self_sheet_r2_c1", "self_sheet_r3_c4", "self_pack2_r2_c1", "self_pack2_r3_c5"],
+  fighting: ["self_fighting"],
 };
 
 const elements = {
@@ -104,8 +111,6 @@ const elements = {
   panelCloseButton: document.querySelector("#panelCloseButton"),
   nextTaskTitle: document.querySelector("#nextTaskTitle"),
   nextTaskBody: document.querySelector("#nextTaskBody"),
-  micStatus: document.querySelector("#micStatus"),
-  cameraStatus: document.querySelector("#cameraStatus"),
   micButton: document.querySelector("#micButton"),
   cameraButton: document.querySelector("#cameraButton"),
   eyeRollButton: document.querySelector("#eyeRollButton"),
@@ -120,7 +125,35 @@ const elements = {
   cameraPanel: document.querySelector("#cameraPanel"),
   cameraPreview: document.querySelector("#cameraPreview"),
   modeButtons: document.querySelectorAll("[data-mode]"),
+  azhiInput: document.querySelector("#azhiInput"),
+  azhiReply: document.querySelector("#azhiReply"),
+  actionList: document.querySelector("#actionList"),
+  askAzhiButton: document.querySelector("#askAzhiButton"),
+  captureButton: document.querySelector("#captureButton"),
+  thinkAgainButton: document.querySelector("#thinkAgainButton"),
+  capturePreviewWrap: document.querySelector("#capturePreviewWrap"),
+  capturePreview: document.querySelector("#capturePreview"),
 };
+
+function isPanelOpen() {
+  return !elements.controlPanel.classList.contains("is-hidden");
+}
+
+function setAzhiReply(message, actions = []) {
+  elements.azhiReply.textContent = message;
+  elements.actionList.innerHTML = "";
+  elements.actionList.classList.toggle("is-hidden", actions.length === 0);
+  actions.forEach((action) => {
+    const label = document.createElement("label");
+    label.className = "action-item";
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    const span = document.createElement("span");
+    span.textContent = action;
+    label.append(checkbox, span);
+    elements.actionList.append(label);
+  });
+}
 
 function setMode(modeName) {
   const mode = modes[modeName];
@@ -161,11 +194,23 @@ function setExpression(groupName) {
   window.setTimeout(() => {
     elements.portrait.src = `assets/azhi/crops/${id}.jpg`;
     elements.portrait.alt = `阿知表情 ${id}`;
+    elements.portrait.classList.toggle("is-color-avatar", id.startsWith("self_"));
     elements.portrait.style.opacity = "1";
   }, 120);
 }
 
+elements.portrait.addEventListener("error", () => {
+  elements.portrait.classList.add("is-color-avatar");
+  elements.portrait.src = "assets/azhi/crops/self_sheet_r1_c1.jpg";
+});
+
 function speak(message, duration = 60000) {
+  if (isPanelOpen()) {
+    setAzhiReply(message);
+    elements.reactionBubble.classList.add("is-quiet");
+    return;
+  }
+
   window.clearTimeout(state.bubbleTimer);
   window.clearInterval(state.typeTimer);
   elements.reactionBubble.textContent = "";
@@ -205,6 +250,52 @@ function eyeRoll(reason = "聽到一段疑似沒邏輯的話。阿知翻白眼�
   }, 2600);
 }
 
+function inferExpressionFromText(text) {
+  const source = text.toLowerCase();
+  if (/不爽|生氣|扯|荒謬|沒邏輯|鬼打牆|崩潰/.test(source)) return "illogical";
+  if (/難過|累|壓力|擔心|焦慮|怕|卡住/.test(source)) return "soothing";
+  if (/支持|加油|可以|完成|漂亮|帥/.test(source)) return "fighting";
+  if (/為什麼|怎麼|觀察|新聞|截圖|照片|看/.test(source)) return "curious";
+  if (state.mode === "debate") return "debate";
+  if (state.mode === "staff") return "standby";
+  return expressionForMode(state.mode);
+}
+
+function buildLocalReply(text) {
+  const trimmed = text.trim();
+  if (!trimmed && !state.capturedImage) {
+    return {
+      message: "妳先放一小段就好。不要把整個宇宙塞進來，阿知會皺眉。",
+      actions: [],
+      expression: "standby",
+    };
+  }
+
+  if (state.mode === "staff") {
+    return {
+      message: "我先把它變成可行動方向：\n1. 先抓出最小可開始的一步。\n2. 把需要查證的地方獨立出來。\n3. 今天只保留一個能完成的動作。",
+      actions: ["整理成一張阿知日記卡", "把第一步加入待辦", "把需要查證的地方標記起來"],
+      expression: "standby",
+    };
+  }
+
+  if (state.mode === "debate") {
+    return {
+      message: "我先壓測：這段裡面最需要補的是前提。先問一句：這個判斷靠什麼成立？如果答案不穩，後面的推論先不要急著推。",
+      actions: [],
+      expression: "debate",
+    };
+  }
+
+  return {
+    message: state.capturedImage
+      ? "我看到了。先記成一張觀察卡：畫面本身不是結論，它只是線索。妳要我可以下一步幫妳整理成阿知日記。"
+      : "我先接住這段。現在比較像是：妳已經看到一個方向，但還不用急著把它變成清單。先讓它待在可觀察的位置。",
+    actions: [],
+    expression: inferExpressionFromText(trimmed),
+  };
+}
+
 function curiousLook(reason = "妳在看什麼。阿知也想知道。") {
   speak(reason, 3800);
   setExpression("curious");
@@ -232,14 +323,51 @@ async function toggleMic() {
       video: false,
     });
     elements.micButton.setAttribute("aria-pressed", "true");
-    elements.micStatus.textContent = "麥克風：本機感知中";
-    elements.micStatus.classList.add("is-on");
+    elements.micButton.querySelector("small").textContent = "逐字稿";
     elements.stage.classList.add("is-listening");
     speak("只在本機看音量波動。");
+    startTranscriptWatch();
     startVolumeWatch();
   } catch (error) {
-    speak("麥克風沒有開。手動翻白眼仍可使用。");
+    speak("麥克風沒有開。妳仍可以直接輸入。");
   }
+}
+
+function startTranscriptWatch() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    elements.azhiInput.placeholder = "這個瀏覽器沒有逐字稿支援。妳可以直接打字給阿知。";
+    return;
+  }
+
+  const recognition = new SpeechRecognition();
+  recognition.lang = "zh-TW";
+  recognition.continuous = true;
+  recognition.interimResults = true;
+  recognition.onresult = (event) => {
+    let finalText = "";
+    let interimText = "";
+    for (let index = event.resultIndex; index < event.results.length; index += 1) {
+      const result = event.results[index];
+      if (result.isFinal) {
+        finalText += result[0].transcript;
+      } else {
+        interimText += result[0].transcript;
+      }
+    }
+    if (finalText) {
+      elements.azhiInput.value = `${elements.azhiInput.value}${elements.azhiInput.value ? "\n" : ""}${finalText}`;
+    }
+    elements.azhiInput.placeholder = interimText || "逐字稿會出現在這裡。";
+    if (interimText || finalText) {
+      setExpression("curious");
+    }
+  };
+  recognition.onerror = () => {
+    elements.azhiInput.placeholder = "逐字稿暫時不穩，妳可以直接打字。";
+  };
+  recognition.start();
+  state.transcriptRecognition = recognition;
 }
 
 function startVolumeWatch() {
@@ -280,9 +408,12 @@ function stopMic() {
   state.audioContext = null;
   state.analyser = null;
   elements.micButton.setAttribute("aria-pressed", "false");
-  elements.micStatus.textContent = "麥克風：關閉";
-  elements.micStatus.classList.remove("is-on");
+  elements.micButton.querySelector("small").textContent = "麥克風";
   elements.stage.classList.remove("is-listening");
+  if (state.transcriptRecognition) {
+    state.transcriptRecognition.stop();
+    state.transcriptRecognition = null;
+  }
   speak("麥克風已關。");
 }
 
@@ -300,8 +431,7 @@ async function toggleCamera() {
     elements.cameraPreview.srcObject = state.cameraStream;
     await elements.cameraPreview.play();
     elements.cameraButton.setAttribute("aria-pressed", "true");
-    elements.cameraStatus.textContent = "鏡頭：背景感知中";
-    elements.cameraStatus.classList.add("is-on");
+    elements.cameraButton.querySelector("small").textContent = "拍照";
     elements.cameraPanel.classList.remove("is-hidden");
     curiousLook("鏡頭開了。妳在看什麼，阿知也想看。");
   } catch (error) {
@@ -315,8 +445,7 @@ function stopCamera() {
   elements.cameraPreview.pause();
   elements.cameraPreview.srcObject = null;
   elements.cameraButton.setAttribute("aria-pressed", "false");
-  elements.cameraStatus.textContent = "鏡頭：關閉";
-  elements.cameraStatus.classList.remove("is-on");
+  elements.cameraButton.querySelector("small").textContent = "鏡頭";
   elements.cameraPanel.classList.add("is-hidden");
   elements.stage.classList.remove("is-curious");
   window.clearTimeout(state.curiousTimer);
@@ -338,7 +467,10 @@ elements.bubbleToggle.addEventListener("click", () => {
   elements.bubbleToggle.setAttribute("aria-expanded", String(!isOpen));
   document.querySelector(".phone-shell").classList.toggle("controls-open", !isOpen);
   if (!isOpen) {
-    speak("控制台打開。");
+    window.clearTimeout(state.bubbleTimer);
+    window.clearInterval(state.typeTimer);
+    elements.reactionBubble.classList.add("is-quiet");
+    setAzhiReply("控制台打開。妳要我看文字、逐字稿，或拍照都可以。");
   }
 });
 
@@ -351,7 +483,11 @@ elements.panelCloseButton.addEventListener("click", () => {
 
 elements.micButton.addEventListener("click", toggleMic);
 elements.cameraButton.addEventListener("click", toggleCamera);
-elements.eyeRollButton.addEventListener("click", () => eyeRoll());
+elements.eyeRollButton.addEventListener("click", () => {
+  setMode("staff");
+  setAzhiReply("阿知日記草稿：\n今天先記一個觀察，不急著定論。等正式 API 接上後，這裡會整理成可存到 Google Drive 的日記卡。");
+  setExpression("companion");
+});
 elements.readingButton.addEventListener("click", () => setMode("reading"));
 elements.dogButton.addEventListener("click", () => {
   setMode("dogcare");
@@ -380,14 +516,43 @@ elements.phantomButton.addEventListener("click", () => {
   setDogState("is-phantom", "阿知正在以不承認的方式唱歌劇魅影。", "Sing for me? 好。只唱一句，避免版權和尷尬。");
 });
 
+elements.askAzhiButton.addEventListener("click", () => {
+  const reply = buildLocalReply(elements.azhiInput.value);
+  setAzhiReply(reply.message, reply.actions);
+  setExpression(reply.expression);
+});
+
+elements.thinkAgainButton.addEventListener("click", () => {
+  setAzhiReply("好，再想想。先不要急著收斂，這裡可能還有一個沒被說出來的前提。", ["補一個前提", "換一種說法", "先放旁邊"]);
+  setExpression("debate");
+});
+
+elements.captureButton.addEventListener("click", () => {
+  if (!state.cameraStream) {
+    setAzhiReply("先開鏡頭，我才能把畫面放進這裡。");
+    setExpression("curious");
+    return;
+  }
+
+  const canvas = document.createElement("canvas");
+  const video = elements.cameraPreview;
+  canvas.width = video.videoWidth || 640;
+  canvas.height = video.videoHeight || 480;
+  canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
+  state.capturedImage = canvas.toDataURL("image/jpeg", 0.82);
+  elements.capturePreview.src = state.capturedImage;
+  elements.capturePreviewWrap.classList.remove("is-hidden");
+  elements.azhiInput.placeholder = "照片已放上來。妳可以補一句脈絡，再請阿知看。";
+  setAzhiReply("照片先放在這裡。正式 API 接上後，我會看圖，不是只看妳的描述。");
+  setExpression("curious");
+});
+
 window.addEventListener("pagehide", () => {
   stopMic();
   stopCamera();
 });
 
 if (!navigator.mediaDevices?.getUserMedia) {
-  elements.micStatus.textContent = "麥克風：此瀏覽器不支援";
-  elements.cameraStatus.textContent = "鏡頭：此瀏覽器不支援";
   elements.micButton.disabled = true;
   elements.cameraButton.disabled = true;
 }
