@@ -236,7 +236,7 @@ button {
 }
 
 .is-hidden {
-  display: none;
+  display: none !important;
 }
 
 .status-strip {
@@ -272,6 +272,18 @@ button {
   letter-spacing: 0;
 }
 
+.panel-title-link {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(31, 29, 27, 0.28);
+}
+
+.panel-title-link:focus-visible {
+  outline: 2px solid rgba(31, 29, 27, 0.38);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
 h1,
 h2,
 p {
@@ -290,6 +302,10 @@ h1 {
   color: var(--muted);
   font-size: 14px;
   line-height: 1.5;
+}
+
+.control-panel.is-dog-mode #modeLine {
+  display: none;
 }
 
 .input-panel {
@@ -322,7 +338,7 @@ h1 {
 
 .input-actions {
   display: grid;
-  grid-template-columns: 1.05fr 1.2fr 0.9fr;
+  grid-template-columns: 1fr 1.25fr;
   gap: 8px;
 }
 
@@ -356,6 +372,16 @@ h1 {
   display: grid;
   gap: 8px;
   margin-top: 10px;
+}
+
+.reply-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+
+.reply-actions .mini-action {
+  min-width: 96px;
 }
 
 .action-item {
@@ -437,42 +463,111 @@ h1 {
   display: grid;
   justify-items: center;
   gap: 8px;
-  padding: 4px 0 2px;
+  padding: 6px 0 4px;
 }
 
-.shiba {
-  width: min(100%, 260px);
-  aspect-ratio: 320 / 190;
+.dog-stage {
+  position: relative;
+  width: 100%;
+  min-height: 206px;
+  overflow: hidden;
+  border: 1px solid rgba(31, 29, 27, 0.12);
+  border-radius: 14px;
+  background: #ffffff;
 }
 
-.dog-line,
-.dog-tail {
-  fill: none;
-  stroke: var(--ink);
-  stroke-width: 4;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+.dog-sprite {
+  position: absolute;
+  left: 20px;
+  bottom: 28px;
+  width: min(78%, 292px);
+  mix-blend-mode: multiply;
+  transform-origin: 50% 85%;
+  transition: transform 0.24s ease;
 }
 
-.dog-dot,
-.dog-bubbles circle {
-  fill: var(--ink);
+.werewolf-pattern {
+  position: absolute;
+  inset: 12px;
+  width: calc(100% - 24px);
+  height: calc(100% - 24px);
+  object-fit: contain;
+  opacity: 0;
+  transform: scale(0.88) rotate(-2deg);
+  transition: opacity 0.22s ease, transform 0.22s ease;
+  pointer-events: none;
 }
 
-.dog-tail {
-  transform-origin: 250px 78px;
+.dog-bowl {
+  position: absolute;
+  right: 26px;
+  bottom: 32px;
+  width: 34px;
+  height: 17px;
+  border: 2px solid var(--ink);
+  border-top: 0;
+  border-radius: 0 0 18px 18px;
+  opacity: 0;
 }
 
-.dog-scene.is-fed .dog-tail {
-  animation: tailWag 0.42s ease-in-out infinite;
+.dog-bubble {
+  position: absolute;
+  width: 11px;
+  height: 11px;
+  border: 1.8px solid var(--ink);
+  border-radius: 50%;
+  opacity: 0;
 }
 
-.dog-scene.is-bath .dog-bubbles {
-  animation: bubbleFloat 1.2s ease-in-out infinite;
+.dog-bubble.one {
+  right: 58px;
+  top: 34px;
 }
 
-.dog-scene.is-phantom .shiba {
-  animation: tinyNod 0.9s ease-in-out infinite;
+.dog-bubble.two {
+  right: 38px;
+  top: 52px;
+  width: 8px;
+  height: 8px;
+}
+
+.dog-scene.is-walking .dog-sprite {
+  animation: dogWalkBy 3.2s ease-in-out both;
+}
+
+.dog-scene.is-fed .dog-sprite {
+  animation: dogWaiting 0.75s ease-in-out infinite;
+}
+
+.dog-scene.is-fed .dog-bowl {
+  opacity: 1;
+}
+
+.dog-scene.is-bath .dog-sprite {
+  animation: dogBath 1.2s ease-in-out infinite;
+}
+
+.dog-scene.is-bath .dog-bubble {
+  animation: bubbleFloat 1.25s ease-in-out infinite;
+}
+
+.dog-scene.is-phantom .dog-sprite {
+  animation: dogSing 0.95s ease-in-out infinite;
+}
+
+.dog-scene.is-werewolf .dog-stage {
+  background: #fff8f2;
+}
+
+.dog-scene.is-werewolf .dog-sprite {
+  opacity: 0.16;
+  transform: translateX(-18px) scale(0.88);
+}
+
+.dog-scene.is-werewolf .werewolf-pattern {
+  opacity: 1;
+  transform: scale(1) rotate(0);
+  animation: werewolfPulse 1.15s ease-in-out infinite;
 }
 
 #dogStatus {
@@ -483,8 +578,65 @@ h1 {
 
 .dog-actions {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 8px;
+}
+
+.dog-care-menu {
+  display: grid;
+  gap: 9px;
+  margin-top: 12px;
+}
+
+.care-choice-grid,
+.care-subchoices {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.care-choice,
+.care-subchoice {
+  min-height: 40px;
+  border: 1px solid rgba(31, 29, 27, 0.18);
+  border-radius: 14px;
+  padding: 9px 10px;
+  background: rgba(255, 250, 241, 0.72);
+  color: var(--ink);
+  font: inherit;
+  font-size: 13px;
+  line-height: 1.25;
+  text-align: left;
+}
+
+.care-choice:hover,
+.care-subchoice:hover {
+  border-color: rgba(31, 29, 27, 0.42);
+  background: #f0e3c9;
+}
+
+.care-choice.is-active {
+  border-color: var(--ink);
+  background: #f0e3c9;
+  font-weight: 700;
+}
+
+.lyric-marquee {
+  overflow: hidden;
+  border: 1px solid rgba(31, 29, 27, 0.14);
+  border-radius: 999px;
+  padding: 8px 0;
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--muted);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.lyric-marquee span {
+  display: inline-block;
+  min-width: 100%;
+  padding-left: 100%;
+  animation: lyricRun 14s linear infinite;
 }
 
 .mini-action {
@@ -501,9 +653,37 @@ h1 {
   font-weight: 700;
 }
 
-@keyframes tailWag {
-  0%, 100% { transform: rotate(-4deg); }
-  50% { transform: rotate(7deg); }
+@keyframes dogWalkBy {
+  0% { transform: translateX(260px) translateY(0) rotate(0); }
+  36% { transform: translateX(128px) translateY(-2px) rotate(1.1deg); }
+  70% { transform: translateX(36px) translateY(1px) rotate(-0.8deg); }
+  100% { transform: translateX(0) translateY(0) rotate(0); }
+}
+
+@keyframes werewolfPulse {
+  0%, 100% { filter: none; transform: scale(1) rotate(0); }
+  50% { filter: contrast(1.15); transform: scale(1.03) rotate(-0.6deg); }
+}
+
+@keyframes lyricRun {
+  from { transform: translateX(0); }
+  to { transform: translateX(-100%); }
+}
+
+@keyframes dogWaiting {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  50% { transform: translateY(-3px) rotate(-0.7deg); }
+}
+
+@keyframes dogBath {
+  0%, 100% { transform: translateY(0) rotate(-0.4deg); }
+  50% { transform: translateY(-4px) rotate(0.8deg); }
+}
+
+@keyframes dogSing {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  35% { transform: translateY(-2px) rotate(-1.3deg); }
+  70% { transform: translateY(1px) rotate(1deg); }
 }
 
 @keyframes bubbleFloat {

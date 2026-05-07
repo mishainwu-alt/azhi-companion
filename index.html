@@ -57,14 +57,14 @@
             <button class="mode-chip" data-mode="debate">辯論</button>
           </section>
 
-          <article class="panel next-panel">
-            <p class="panel-label">下一件事</p>
+          <article class="panel next-panel is-hidden" id="nextPanel">
+            <p class="panel-label" id="nextPanelLabel">下一件事</p>
             <h2 id="nextTaskTitle">把雜訊變成可判斷的東西</h2>
             <p id="nextTaskBody">今天只抓三件可啟動行動，不把整個宇宙搬進待辦清單。</p>
           </article>
 
-          <section class="input-panel" aria-label="讓阿知看">
-            <label class="panel-label" for="azhiInput">讓我有地方輸入</label>
+          <section class="input-panel" id="inputPanel" aria-label="Monika輸入">
+            <label class="panel-label" for="azhiInput">Monika輸入</label>
             <textarea id="azhiInput" rows="4" placeholder="貼文字、逐字稿、新聞片段，或先開鏡頭拍照給阿知看。"></textarea>
             <div class="capture-preview is-hidden" id="capturePreviewWrap">
               <img id="capturePreview" alt="準備給阿知看的拍照預覽">
@@ -72,7 +72,6 @@
             <div class="input-actions">
               <button class="mini-action primary-action" id="askAzhiButton" type="button">請阿知看</button>
               <button class="mini-action" id="captureButton" type="button">拍照給阿知看</button>
-              <button class="mini-action" id="thinkAgainButton" type="button">再想想</button>
             </div>
           </section>
 
@@ -80,39 +79,44 @@
             <p class="panel-label">阿知回話</p>
             <div id="azhiReply">我在。妳把東西放上來，我先看脈絡。</div>
             <div class="action-list is-hidden" id="actionList"></div>
+            <div class="reply-actions is-hidden" id="replyActions">
+              <button class="mini-action" id="thinkAgainButton" type="button">再想想</button>
+            </div>
           </article>
 
           <article class="panel dog-contract-panel is-hidden" id="dogContractPanel">
-            <p class="panel-label">狗狗契約</p>
+            <p class="panel-label">阿知的線條狗</p>
             <div class="dog-scene" id="dogScene">
-              <svg class="shiba" viewBox="0 0 320 190" role="img" aria-label="等待照護的線稿柴犬">
-                <path class="dog-line" d="M64 116c12-49 45-76 96-76 54 0 88 28 102 78"/>
-                <path class="dog-line" d="M84 74 70 37l35 21"/>
-                <path class="dog-line" d="M214 59l35-22-13 39"/>
-                <path class="dog-line" d="M116 93c9-8 21-8 30 0"/>
-                <path class="dog-line" d="M176 93c9-8 21-8 30 0"/>
-                <circle class="dog-dot" cx="132" cy="95" r="4"/>
-                <circle class="dog-dot" cx="190" cy="95" r="4"/>
-                <path class="dog-line" d="M160 108c-8 6-16 6-24 0"/>
-                <path class="dog-line" d="M160 108c8 6 16 6 24 0"/>
-                <path class="dog-line" d="M82 119c-29 9-45 29-49 60"/>
-                <path class="dog-line" d="M238 118c26 12 41 32 45 61"/>
-                <path class="dog-line" d="M115 128c-7 23-10 40-10 52"/>
-                <path class="dog-line" d="M207 128c7 23 10 40 10 52"/>
-                <path class="dog-tail" d="M250 78c42-34 75-4 45 24-22 20-51 5-38-16"/>
-                <g class="dog-bubbles" aria-hidden="true">
-                  <circle cx="64" cy="42" r="5"/>
-                  <circle cx="50" cy="30" r="3"/>
-                  <circle cx="279" cy="48" r="4"/>
-                </g>
-              </svg>
+              <div class="dog-stage" aria-label="等待照護的線稿狗狗">
+                <img class="dog-sprite" id="dogSprite" src="assets/dog/mono_051.png" alt="線稿狗狗">
+                <img class="werewolf-pattern" src="assets/dog/werewolf_pattern.png" alt="Monika 狗狗爆炸狼人 pattern">
+                <span class="dog-bowl" aria-hidden="true"></span>
+                <span class="dog-bubble one" aria-hidden="true"></span>
+                <span class="dog-bubble two" aria-hidden="true"></span>
+              </div>
               <p id="dogStatus">等待餵食。週報禁止靠近。</p>
             </div>
             <div class="dog-actions">
+              <button class="mini-action" id="walkDogButton" type="button">路過</button>
               <button class="mini-action" id="feedDogButton" type="button">餵食</button>
               <button class="mini-action" id="bathDogButton" type="button">泡泡浴</button>
-              <button class="mini-action" id="phantomButton" type="button">Sing for me</button>
+              <button class="mini-action" id="phantomButton" type="button">Sing</button>
             </div>
+            <section class="dog-care-menu" aria-label="Monika 狗狗照護選單">
+              <p class="panel-label">Monika 狗狗想被照顧</p>
+              <div class="care-choice-grid">
+                <button class="care-choice" data-care="hungry" type="button">肚子餓</button>
+                <button class="care-choice" data-care="bath" type="button">該洗澡了</button>
+                <button class="care-choice" data-care="thinking" type="button">發呆想事情</button>
+                <button class="care-choice" data-care="poop" type="button">扁扁請清理</button>
+                <button class="care-choice" data-care="angry" type="button">阿知把 Monika 惹毛</button>
+                <button class="care-choice" data-care="sleep" type="button">想睡覺</button>
+              </div>
+              <div class="care-subchoices is-hidden" id="careSubchoices" aria-live="polite"></div>
+              <div class="lyric-marquee is-hidden" id="lyricMarquee" aria-live="polite">
+                <span id="lyricLine">水溫確認中，燈光調暗，阿知正在避免把歌唱得太有偶包。</span>
+              </div>
+            </section>
           </article>
 
           <article class="panel camera-panel is-hidden" id="cameraPanel">
@@ -130,15 +134,15 @@
               <span aria-hidden="true">Cam</span>
               <small>鏡頭</small>
             </button>
-            <button class="tool-button primary" id="eyeRollButton" type="button">
+            <button class="tool-button primary" id="eyeRollButton" type="button" aria-pressed="true">
               <span aria-hidden="true">Diary</span>
               <small>阿知日記</small>
             </button>
-            <button class="tool-button" id="readingButton" type="button">
+            <button class="tool-button" id="readingButton" type="button" aria-pressed="false">
               <span aria-hidden="true">Book</span>
               <small>讀書室</small>
             </button>
-            <button class="tool-button" id="dogButton" type="button">
+            <button class="tool-button" id="dogButton" type="button" aria-pressed="false">
               <span aria-hidden="true">Dog</span>
               <small>照護</small>
             </button>
