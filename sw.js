@@ -1,4 +1,4 @@
-const CACHE_NAME = "azhi-companion-v17";
+const CACHE_NAME = "azhi-companion-v19";
 const SHELL_ASSETS = [
   "./",
   "./index.html",

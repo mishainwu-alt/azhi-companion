@@ -123,17 +123,11 @@ const dogCareOptions = {
 
 const state = {
   mode: "copilot",
-  micStream: null,
   cameraStream: null,
-  audioContext: null,
-  analyser: null,
-  volumeTimer: null,
-  lastAutoEyeRoll: 0,
   bubbleTimer: null,
   typeTimer: null,
   idleTalkTimer: null,
   curiousTimer: null,
-  transcriptRecognition: null,
   capturedImage: null,
 };
 
@@ -173,7 +167,6 @@ const elements = {
   nextPanelLabel: document.querySelector("#nextPanelLabel"),
   nextTaskTitle: document.querySelector("#nextTaskTitle"),
   nextTaskBody: document.querySelector("#nextTaskBody"),
-  micButton: document.querySelector("#micButton"),
   cameraButton: document.querySelector("#cameraButton"),
   eyeRollButton: document.querySelector("#eyeRollButton"),
   readingButton: document.querySelector("#readingButton"),
@@ -395,6 +388,57 @@ function buildLocalReply(text) {
   };
 }
 
+async function askAzhiWithModel(text) {
+  const trimmed = text.trim();
+  if (!trimmed && !state.capturedImage) {
+    return buildLocalReply(text);
+  }
+
+  const endpoint = window.AZHI_API_ENDPOINT || "/api/azhi";
+  try {
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        text: trimmed || "Monika 傳了一張照片，請先以低壓方式提醒她補一句脈絡。",
+        mode: state.mode,
+      }),
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.detail || data.error || "API request failed");
+    }
+
+    return {
+      message: data.reply,
+      actions: [],
+      showThinkAgain: state.mode === "staff" || state.mode === "debate",
+      expression: inferExpressionFromText(`${trimmed}\n${data.reply}`),
+    };
+  } catch (error) {
+    const fallback = buildLocalReply(text);
+    return {
+      ...fallback,
+      message: `${fallback.message}\n\n（模型還沒接通，阿知先用本機模式撐住：${error.message}）`,
+    };
+  }
+}
+
+async function handleAskAzhi() {
+  elements.askAzhiButton.disabled = true;
+  elements.askAzhiButton.textContent = "阿知讀取中";
+  setAzhiReply("我看一下。先不要把整個宇宙塞進模型。");
+  try {
+    const reply = await askAzhiWithModel(elements.azhiInput.value);
+    setAzhiReply(reply.message, reply.actions, { showThinkAgain: reply.showThinkAgain });
+    setExpression(reply.expression);
+  } finally {
+    elements.askAzhiButton.disabled = false;
+    elements.askAzhiButton.textContent = "請阿知看";
+  }
+}
+
 function curiousLook(reason = "妳在看什麼。阿知也想知道。") {
   speak(reason, 3800);
   setExpression("curious");
@@ -404,116 +448,6 @@ function curiousLook(reason = "妳在看什麼。阿知也想知道。") {
     elements.stage.classList.remove("is-curious");
     setExpression(expressionForMode(state.mode));
   }, 3800);
-}
-
-async function toggleMic() {
-  if (state.micStream) {
-    stopMic();
-    return;
-  }
-
-  try {
-    state.micStream = await navigator.mediaDevices.getUserMedia({
-      audio: {
-        echoCancellation: true,
-        noiseSuppression: true,
-        autoGainControl: true,
-      },
-      video: false,
-    });
-    elements.micButton.setAttribute("aria-pressed", "true");
-    elements.micButton.querySelector("small").textContent = "逐字稿";
-    elements.stage.classList.add("is-listening");
-    speak("只在本機看音量波動。");
-    startTranscriptWatch();
-    startVolumeWatch();
-  } catch (error) {
-    speak("麥克風沒有開。妳仍可以直接輸入。");
-  }
-}
-
-function startTranscriptWatch() {
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SpeechRecognition) {
-    elements.azhiInput.placeholder = "這個瀏覽器沒有逐字稿支援。妳可以直接打字給阿知。";
-    return;
-  }
-
-  const recognition = new SpeechRecognition();
-  recognition.lang = "zh-TW";
-  recognition.continuous = true;
-  recognition.interimResults = true;
-  recognition.onresult = (event) => {
-    let finalText = "";
-    let interimText = "";
-    for (let index = event.resultIndex; index < event.results.length; index += 1) {
-      const result = event.results[index];
-      if (result.isFinal) {
-        finalText += result[0].transcript;
-      } else {
-        interimText += result[0].transcript;
-      }
-    }
-    if (finalText) {
-      elements.azhiInput.value = `${elements.azhiInput.value}${elements.azhiInput.value ? "\n" : ""}${finalText}`;
-    }
-    elements.azhiInput.placeholder = interimText || "逐字稿會出現在這裡。";
-    if (interimText || finalText) {
-      setExpression("curious");
-    }
-  };
-  recognition.onerror = () => {
-    elements.azhiInput.placeholder = "逐字稿暫時不穩，妳可以直接打字。";
-  };
-  recognition.start();
-  state.transcriptRecognition = recognition;
-}
-
-function startVolumeWatch() {
-  const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-  if (!AudioContextClass) {
-    speak("這個瀏覽器不能做本機音量感知。");
-    return;
-  }
-
-  state.audioContext = new AudioContextClass();
-  const source = state.audioContext.createMediaStreamSource(state.micStream);
-  state.analyser = state.audioContext.createAnalyser();
-  state.analyser.fftSize = 512;
-  source.connect(state.analyser);
-
-  const samples = new Uint8Array(state.analyser.frequencyBinCount);
-  state.volumeTimer = window.setInterval(() => {
-    state.analyser.getByteFrequencyData(samples);
-    const average = samples.reduce((sum, value) => sum + value, 0) / samples.length;
-    const now = Date.now();
-    if (average > 72 && now - state.lastAutoEyeRoll > 6500) {
-      state.lastAutoEyeRoll = now;
-      eyeRoll("會議聲量上來了。邏輯如果也能同步上來就好了。");
-    }
-  }, 420);
-}
-
-function stopMic() {
-  stopStream(state.micStream);
-  state.micStream = null;
-  if (state.volumeTimer) {
-    window.clearInterval(state.volumeTimer);
-  }
-  state.volumeTimer = null;
-  if (state.audioContext) {
-    state.audioContext.close();
-  }
-  state.audioContext = null;
-  state.analyser = null;
-  elements.micButton.setAttribute("aria-pressed", "false");
-  elements.micButton.querySelector("small").textContent = "麥克風";
-  elements.stage.classList.remove("is-listening");
-  if (state.transcriptRecognition) {
-    state.transcriptRecognition.stop();
-    state.transcriptRecognition = null;
-  }
-  speak("麥克風已關。");
 }
 
 async function toggleCamera() {
@@ -580,7 +514,6 @@ elements.panelCloseButton.addEventListener("click", () => {
   speak("控制台收起。");
 });
 
-elements.micButton.addEventListener("click", toggleMic);
 elements.cameraButton.addEventListener("click", toggleCamera);
 elements.eyeRollButton.addEventListener("click", () => {
   setActiveTool(elements.eyeRollButton);
@@ -678,11 +611,7 @@ elements.phantomButton.addEventListener("click", () => {
   setDogState("is-phantom", "阿知正在以不承認的方式唱歌劇魅影。", "Sing for me? 好。只唱一句，避免版權和尷尬。");
 });
 
-elements.askAzhiButton.addEventListener("click", () => {
-  const reply = buildLocalReply(elements.azhiInput.value);
-  setAzhiReply(reply.message, reply.actions, { showThinkAgain: reply.showThinkAgain });
-  setExpression(reply.expression);
-});
+elements.askAzhiButton.addEventListener("click", handleAskAzhi);
 
 elements.thinkAgainButton.addEventListener("click", () => {
   setAzhiReply("好，再想想。先不要急著收斂，這裡可能還有一個沒被說出來的前提。", ["補一個前提", "換一種說法", "先放旁邊"], { showThinkAgain: true });
@@ -711,12 +640,10 @@ elements.captureButton.addEventListener("click", async () => {
 });
 
 window.addEventListener("pagehide", () => {
-  stopMic();
   stopCamera();
 });
 
 if (!navigator.mediaDevices?.getUserMedia) {
-  elements.micButton.disabled = true;
   elements.cameraButton.disabled = true;
 }
 
