@@ -51,10 +51,12 @@
             <p id="modeLine">不接管，只幫妳把下一步看清楚。</p>
           </div>
 
-          <section class="mode-dock" aria-label="阿知模式切換">
+          <section class="mode-dock is-hidden" aria-label="阿知模式切換">
             <button class="mode-chip active" data-mode="copilot">副駕</button>
             <button class="mode-chip" data-mode="staff">幕僚</button>
             <button class="mode-chip" data-mode="debate">辯論</button>
+            <button class="mode-chip" data-mode="tutor">家教</button>
+            <button class="mode-chip" data-mode="reading">陪讀</button>
           </section>
 
           <article class="panel next-panel is-hidden" id="nextPanel">
@@ -76,7 +78,19 @@
           </section>
 
           <article class="panel azhi-reply-panel" aria-live="polite">
-            <p class="panel-label">阿知回話</p>
+            <div class="reply-head">
+              <p class="panel-label">阿知回話</p>
+              <label class="mode-select-label" for="modeSelect">
+                <span>狀態</span>
+                <select id="modeSelect">
+                  <option value="copilot">副駕｜聊人生</option>
+                  <option value="staff">幕僚｜提供決策</option>
+                  <option value="debate">辯論｜拆世界</option>
+                  <option value="tutor">家教｜教到會</option>
+                  <option value="reading">陪讀｜安靜看書</option>
+                </select>
+              </label>
+            </div>
             <div id="azhiReply">我在。妳把東西放上來，我先看脈絡。</div>
             <div class="action-list is-hidden" id="actionList"></div>
             <div class="reply-actions is-hidden" id="replyActions">
@@ -140,11 +154,13 @@
             </button>
             <button class="tool-button" id="dogButton" type="button" aria-pressed="false">
               <span aria-hidden="true">Dog</span>
-              <small>照護</small>
+              <small>線條狗</small>
             </button>
           </nav>
+          <footer class="app-footer">Copyright © 2026 A-Zhi、Min. H. Wu</footer>
         </div>
       </section>
+      <footer class="standby-footer">Copyright © 2026 A-Zhi、Min. H. Wu</footer>
     </main>
 
     <script src="app.js"></script>

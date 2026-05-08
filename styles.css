@@ -49,6 +49,27 @@ button {
   padding: max(18px, env(safe-area-inset-top)) 16px max(18px, env(safe-area-inset-bottom));
 }
 
+.standby-footer,
+.app-footer {
+  color: rgba(31, 29, 27, 0.48);
+  font-size: 11px;
+  letter-spacing: 0;
+}
+
+.standby-footer {
+  position: fixed;
+  left: 50%;
+  bottom: max(8px, env(safe-area-inset-bottom));
+  z-index: 2;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.app-footer {
+  justify-self: center;
+  padding: 4px 0 0;
+}
+
 .phone-shell.controls-open .observation-text {
   top: clamp(28px, 6svh, 52px);
   right: 28px;
@@ -176,28 +197,33 @@ button {
 }
 
 .bubble-toggle {
+  position: relative;
   display: grid;
   place-items: center;
   width: 56px;
   height: 56px;
   border: 1.7px solid rgba(31, 29, 27, 0.74);
-  border-radius: 50%;
-  background: rgba(255, 250, 241, 0.84);
+  border-radius: 18px;
+  background: rgba(255, 250, 241, 0.84) url("assets/azhi/crops/self_pack2_r2_c1.jpg") center 34% / cover no-repeat;
   box-shadow: var(--shadow);
+  overflow: hidden;
 }
 
 .bubble-toggle span {
-  margin-top: 4px;
+  position: absolute;
+  left: 7px;
+  bottom: 5px;
+  min-width: 25px;
+  border-radius: 999px;
+  padding: 2px 5px;
+  background: rgba(255, 255, 255, 0.82);
   font-size: 18px;
   font-weight: 900;
   line-height: 1;
 }
 
 .bubble-toggle small {
-  margin-top: -8px;
-  color: var(--muted);
-  font-size: 10px;
-  font-weight: 700;
+  display: none;
 }
 
 .control-panel {
@@ -211,7 +237,7 @@ button {
   border: 1.7px solid rgba(31, 29, 27, 0.76);
   border-radius: 22px 22px 8px 22px;
   padding: 14px;
-  background: var(--panel);
+  background: rgba(255, 255, 255, 0.9);
   box-shadow: var(--shadow);
   backdrop-filter: blur(14px);
 }
@@ -304,6 +330,10 @@ h1 {
   line-height: 1.5;
 }
 
+#modeLine {
+  display: none;
+}
+
 .control-panel.is-dog-mode #modeLine {
   display: none;
 }
@@ -359,6 +389,33 @@ h1 {
 
 .azhi-reply-panel {
   background: rgba(255, 255, 255, 0.78);
+}
+
+.reply-head {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.mode-select-label {
+  display: grid;
+  gap: 5px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.mode-select-label select {
+  width: 100%;
+  min-height: 38px;
+  border: 1px solid rgba(31, 29, 27, 0.18);
+  border-radius: 999px;
+  padding: 0 36px 0 13px;
+  color: var(--ink);
+  background: rgba(255, 250, 241, 0.82);
+  font: inherit;
+  font-size: 13px;
 }
 
 #azhiReply {
@@ -456,7 +513,8 @@ h1 {
 }
 
 .dog-contract-panel {
-  overflow: hidden;
+  overflow: visible;
+  border-color: rgba(88, 50, 112, 0.24);
 }
 
 .dog-scene {
@@ -469,18 +527,23 @@ h1 {
 .dog-stage {
   position: relative;
   width: 100%;
-  min-height: 206px;
+  min-height: clamp(240px, 46svh, 360px);
+  aspect-ratio: 4 / 3;
   overflow: hidden;
-  border: 1px solid rgba(31, 29, 27, 0.12);
+  border: 1.4px solid rgba(88, 50, 112, 0.22);
   border-radius: 14px;
-  background: #ffffff;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(255, 250, 241, 0.92)),
+    #ffffff;
 }
 
 .dog-sprite {
   position: absolute;
-  left: 20px;
-  bottom: 28px;
-  width: min(78%, 292px);
+  left: clamp(10px, 4vw, 22px);
+  bottom: clamp(14px, 4vw, 24px);
+  width: min(92%, 430px);
+  max-height: calc(100% - 28px);
+  object-fit: contain;
   mix-blend-mode: multiply;
   transform-origin: 50% 85%;
   transition: transform 0.24s ease;
@@ -654,9 +717,9 @@ h1 {
 }
 
 @keyframes dogWalkBy {
-  0% { transform: translateX(260px) translateY(0) rotate(0); }
-  36% { transform: translateX(128px) translateY(-2px) rotate(1.1deg); }
-  70% { transform: translateX(36px) translateY(1px) rotate(-0.8deg); }
+  0% { transform: translateX(220px) translateY(0) rotate(0); }
+  44% { transform: translateX(86px) translateY(-2px) rotate(1deg); }
+  78% { transform: translateX(18px) translateY(1px) rotate(-0.6deg); }
   100% { transform: translateX(0) translateY(0) rotate(0); }
 }
 
@@ -848,14 +911,17 @@ h1 {
   }
 
   .control-bubble {
-    right: max(14px, env(safe-area-inset-right));
+    right: auto;
+    left: max(16px, env(safe-area-inset-left));
     bottom: max(12px, env(safe-area-inset-bottom));
-    width: min(54vw, 420px);
+    width: min(46vw, 430px);
+    justify-items: start;
   }
 
   .bubble-toggle {
     width: 50px;
     height: 50px;
+    border-radius: 16px;
   }
 
   .bubble-toggle span {
@@ -867,7 +933,18 @@ h1 {
   }
 
   .control-panel {
-    max-height: min(70svh, 430px);
+    max-height: min(82svh, 520px);
+    border-radius: 22px 22px 22px 8px;
+  }
+
+  .dog-stage {
+    min-height: min(52svh, 340px);
+  }
+
+  .standby-footer {
+    left: auto;
+    right: max(18px, env(safe-area-inset-right));
+    transform: none;
   }
 }
 

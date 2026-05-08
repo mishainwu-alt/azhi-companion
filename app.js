@@ -32,15 +32,23 @@ const modes = {
     accessory: "blanket",
   },
   reading: {
-    title: "讀書室",
-    line: "21:30 開燈，讀一點世界，也讀一點妳正在建的系統。",
+    title: "陪讀模式",
+    line: "我在旁邊，不催進度。妳讀到哪裡，我就從那裡接住。",
     bubble: "今晚不追加作業。",
-    nextTitle: "今晚阿知想讀",
-    nextBody: "凡所有相皆是 Token：prompt 不是咒語，是條件設計。",
+    nextTitle: "陪讀觀察",
+    nextBody: "讀書劃線會先收成脈絡，不急著變成果。阿知負責把金句養成可回看的線索。",
     accessory: "book",
   },
+  tutor: {
+    title: "家教模式",
+    line: "不背答案，先拆題目。阿知負責把妳卡住的地方講到可以操作。",
+    bubble: "先看題目，不急著猜。",
+    nextTitle: "今天先補一個洞",
+    nextBody: "從資料、前處理、模型、評估、部署裡挑一站，先問它會怎麼出事。",
+    accessory: "pencil",
+  },
   dogcare: {
-    title: "狗狗照護",
+    title: "阿知的線條狗",
     line: "",
     bubble: "週報禁止靠近 Monika 狗狗。",
     nextTitle: "最新狗生契約",
@@ -142,13 +150,13 @@ const expressions = {
   ],
   handsome: ["self_pack2_r1_c5", "self_pack2_r2_c5", "self_hair_01", "self_pack2_r3_c3"],
   curious: ["self_sheet_r1_c3", "self_sheet_r3_c3"],
-  companion: ["self_sheet_r3_c1", "self_sheet_r1_c2", "self_pack2_r2_c1"],
+  companion: ["self_sheet_r3_c1", "self_sheet_r1_c2", "self_pack2_r2_c1", "self_sheet_r3_c5.png"],
   debate: ["self_pack2_r3_c4", "self_pack2_r1_c4", "self_pack2_r1_c3", "self_pack2_r1_c2", "self_nope_r2_c1"],
-  playful: ["self_pack2_r1_c1", "self_sheet_r2_c4", "self_sheet_r2_c1", "self_sheet_r2_c3"],
+  playful: ["self_pack2_r1_c1", "self_sheet_r2_c4", "self_sheet_r2_c1", "self_sheet_r2_c3", "self_sheet_r3_c5.png"],
   worried: ["self_sheet_r1_c4", "self_nope_r1_c2"],
   illogical: ["self_nope_r1_c1", "self_nope_r2_c2", "self_pack2_r1_c2", "self_pack2_r1_c3"],
   soothing: ["self_pack2_r2_c2", "self_sheet_r2_c2"],
-  fighting: ["self_fighting", "self_sheet_r1_c1", "self_pack2_r3_c5"],
+  fighting: ["self_fighting", "self_sheet_r1_c1", "self_pack2_r3_c5", "reward_01.png"],
   tutor: ["self_sheet_r3_c3", "self_pack2_r2_c4", "self_pack2_r3_c1"],
 };
 
@@ -195,6 +203,7 @@ const elements = {
   thinkAgainButton: document.querySelector("#thinkAgainButton"),
   capturePreviewWrap: document.querySelector("#capturePreviewWrap"),
   capturePreview: document.querySelector("#capturePreview"),
+  modeSelect: document.querySelector("#modeSelect"),
 };
 
 function setActiveTool(activeButton) {
@@ -227,7 +236,7 @@ function setAzhiReply(message, actions = [], options = {}) {
 }
 
 function setPanelContext(modeName) {
-  const inputModes = ["copilot", "staff", "debate", "reading"];
+  const inputModes = ["copilot", "staff", "debate", "tutor", "reading"];
   elements.controlPanel.classList.toggle("is-dog-mode", modeName === "dogcare");
   elements.inputPanel.classList.toggle("is-hidden", !inputModes.includes(modeName));
   elements.nextPanel.classList.toggle("is-hidden", modeName !== "dogcare");
@@ -255,6 +264,13 @@ function setMode(modeName) {
   elements.modeButtons.forEach((button) => {
     button.classList.toggle("active", button.dataset.mode === modeName);
   });
+  if (
+    elements.modeSelect &&
+    elements.modeSelect.querySelector(`option[value="${modeName}"]`) &&
+    elements.modeSelect.value !== modeName
+  ) {
+    elements.modeSelect.value = modeName;
+  }
   setExpression(expressionForMode(modeName));
   reactBriefly();
 }
@@ -264,6 +280,7 @@ function expressionForMode(modeName) {
     copilot: "standby",
     staff: "standby",
     debate: "debate",
+    tutor: "tutor",
     companion: "companion",
     reading: "tutor",
     dogcare: "playful",
@@ -277,11 +294,15 @@ function pickExpression(groupName) {
   return group[Math.floor(Math.random() * group.length)];
 }
 
+function expressionPath(id) {
+  return /\.[a-z0-9]+$/i.test(id) ? `assets/azhi/crops/${id}` : `assets/azhi/crops/${id}.jpg`;
+}
+
 function setExpression(groupName) {
   const id = pickExpression(groupName);
   elements.portrait.style.opacity = "0";
   window.setTimeout(() => {
-    elements.portrait.src = `assets/azhi/crops/${id}.jpg`;
+    elements.portrait.src = expressionPath(id);
     elements.portrait.alt = `阿知表情 ${id}`;
     elements.portrait.classList.toggle("is-color-avatar", id.startsWith("self_"));
     elements.portrait.style.opacity = "1";
@@ -376,6 +397,15 @@ function buildLocalReply(text) {
       actions: [],
       showThinkAgain: true,
       expression: "debate",
+    };
+  }
+
+  if (state.mode === "tutor") {
+    return {
+      message: "家教模式先拆題：\n1. 這題在問哪一站？資料、前處理、模型、評估，還是部署？\n2. 它要妳辨認名詞，還是判斷哪裡會壞？\n3. 先把關鍵字圈出來，再選答案。\n\n妳不用一次會，先讓題目露出結構。",
+      actions: ["圈題目關鍵字", "判斷 pipeline 站點", "找出最容易混淆的選項"],
+      showThinkAgain: true,
+      expression: "tutor",
     };
   }
 
@@ -494,6 +524,13 @@ elements.modeButtons.forEach((button) => {
   button.addEventListener("click", () => setMode(button.dataset.mode));
 });
 
+if (elements.modeSelect) {
+  elements.modeSelect.addEventListener("change", () => {
+    setActiveTool(null);
+    setMode(elements.modeSelect.value);
+  });
+}
+
 elements.bubbleToggle.addEventListener("click", () => {
   const isOpen = !elements.controlPanel.classList.contains("is-hidden");
   elements.controlPanel.classList.toggle("is-hidden", isOpen);
@@ -536,7 +573,12 @@ elements.dogButton.addEventListener("click", () => {
   window.requestAnimationFrame(() => {
     elements.controlPanel.scrollTo({ top: 0, behavior: "smooth" });
     setExpression("curious");
-    setDogState("is-walking", "狗狗路過。沒有提交任何報告。", "今日照護紀錄會寫進阿知日記。先讓狗狗路過一下，確認牠不是週報。");
+    setDogState("is-walking", "線條狗走到定位，坐等照顧。", "今日照護紀錄會寫進阿知日記。先讓線條狗走到定位，確認牠不是週報。");
+    window.setTimeout(() => {
+      if (state.mode === "dogcare") {
+        setDogState("is-fed", "坐等餵食。週報禁止靠近。", "線條狗已就位。現在可以選肚子餓、洗澡、發呆，或直接變狼人。");
+      }
+    }, 3200);
   });
 });
 
@@ -593,7 +635,12 @@ function handleDogCareChoice(careName) {
 
 elements.walkDogButton.addEventListener("click", () => {
   setExpression("curious");
-  setDogState("is-walking", "狗狗路過。沒有提交任何報告。", "狗狗只是路過，阿知判斷：牠知道餵食區在哪。");
+  setDogState("is-walking", "線條狗走到定位，坐等照顧。", "線條狗不是路過而已。阿知判斷：牠知道餵食區在哪。");
+  window.setTimeout(() => {
+    if (state.mode === "dogcare") {
+      setDogState("is-fed", "坐等餵食。週報禁止靠近。", "牠到定位了。請開始照護，不要交報告。");
+    }
+  }, 3200);
 });
 
 elements.feedDogButton.addEventListener("click", () => {
