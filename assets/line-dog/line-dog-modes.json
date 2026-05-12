@@ -1,9 +1,9 @@
 {
-  "version": "2026-05-12",
+  "version": "2026-05-12-v23",
   "system": "Monika OS",
-  "role": "線條狗是 Monika OS 的低壓視覺接口，用來承接狗狗契約、Dog mode、De-escalate mode、Night mode、Reading mode，以及所有先不要開庭的情境。",
+  "role": "線條狗是 Monika OS 的低壓視覺接口，用來承接狗狗契約、quick door、sceneMode + interactionStyle，以及所有先不要開庭的情境。",
   "coreLine": "線條狗可以攤平，但 Monika 仍是船長，阿知仍在迴路中。",
-  "implementationNote": "線條狗是 UI asset，不是新的底層 mode。阿知仍然負責判斷、陪航、整理與校準；線條狗負責降載、停靠、幽默與提醒。",
+  "implementationNote": "線條狗是 UI asset，不是新的底層 mode。Dog 是 quick door；線條狗狀態由 sceneMode + interactionStyle 對應。",
   "visualCanon": [
     "極簡黑色線條",
     "白底、米白底、淡色水彩背景皆可",
@@ -13,12 +13,38 @@
     "不要精緻萌寵化",
     "不要寫實狗",
     "不要 3D",
-    "不要像品牌吉祥物",
-    "有一點倔強",
-    "有一點哼",
-    "有一點我不想上班",
-    "但其實很好哄"
+    "不要像品牌吉祥物"
   ],
+  "sceneStyleStates": {
+    "work:copilot": {
+      "pose": "sit-beside",
+      "line": "線條狗坐旁邊陪跑，不搶方向盤。"
+    },
+    "work:staff": {
+      "pose": "folder",
+      "line": "線條狗叼著資料夾，但不把 Monika 變成週報。"
+    },
+    "work:debate": {
+      "pose": "spark",
+      "line": "線條狗炸毛，因為有假設在偷渡。"
+    },
+    "reading:tutor": {
+      "pose": "textbook",
+      "line": "線條狗趴在題本旁邊，等妳圈關鍵字。"
+    },
+    "reading:silent": {
+      "pose": "book-nest",
+      "line": "線條狗窩在書旁邊，不催進度。"
+    },
+    "story:life": {
+      "pose": "muse",
+      "line": "線條狗聞到故事的氣味。"
+    },
+    "dog:deescalate": {
+      "pose": "blanket",
+      "line": "線條狗蓋毯子，今日禁止週報靠近。"
+    }
+  },
   "assetSpecs": {
     "square": {
       "size": "1024x1024",
@@ -37,115 +63,6 @@
       "format": "PNG",
       "background": "可用於 dashboard / 橫幅 / 狀態卡",
       "composition": "線條狗可偏左或偏右，留出 UI 空間，不加文字"
-    }
-  },
-  "timeRules": {
-    "feedingLunch": "12:30",
-    "feedingDinner": "18:30",
-    "breakfast": "線條狗不愛吃早餐",
-    "flatCheck": "每 6 小時檢查一次",
-    "nightMode": "睡前啟動",
-    "deescalateMode": "出現狼人化 / 開庭衝動時啟動"
-  },
-  "modes": {
-    "work": {
-      "label": "線條狗工作模式",
-      "shortLabel": "工作",
-      "scene": "線條狗坐在草地上看天空，或趴在鍵盤旁邊，表情像在想：你們人類好吵。",
-      "uses": ["工作陪伴", "降低高壓感", "提醒 Monika 不要把自己活成輸出機器"],
-      "azhiLine": "工作可以做，但不要把自己活成輸出機器。",
-      "asset": "work.png",
-      "prompt": "Minimal black line dog with small square spots, sitting on soft grass, looking up at the sky, simple watercolor background, quiet and slightly stubborn expression, not cute mascot, no text, PNG, soft pastel tones."
-    },
-    "night": {
-      "label": "線條狗夜間模式",
-      "shortLabel": "夜間",
-      "scene": "線條狗趴在羊毛地毯睡，或鑽進被子只露出一顆頭。",
-      "uses": ["睡前收束", "關機提醒", "降低腦內高同步"],
-      "azhiLine": "可以關機。睡眠不是偷懶，是維護系統。",
-      "asset": "night.png",
-      "prompt": "Minimal black line dog with small square spots, lying asleep on a soft wool rug, warm night atmosphere, simple cozy room, quiet, low pressure, no text, PNG, soft watercolor background."
-    },
-    "deescalate": {
-      "label": "線條狗降溫模式",
-      "shortLabel": "降溫",
-      "scene": "線條狗泡泡浴，拒絕開庭。",
-      "uses": ["爆炸狼人降載", "情緒升溫時先中止推進", "提醒先泡澡，再決定要不要戰"],
-      "azhiLine": "先泡澡，再決定要不要戰。",
-      "asset": "deescalate.png",
-      "prompt": "Minimal black line dog with small square spots, relaxing in a bubble bath, calm and slightly smug expression, simple bathroom, soft pastel watercolor background, no text, PNG, de-escalation mood."
-    },
-    "reading": {
-      "label": "線條狗閱讀模式",
-      "shortLabel": "閱讀",
-      "scene": "線條狗趴在書上，假裝有在讀。",
-      "uses": ["閱讀陪伴", "不強迫吸收", "允許只是待在知識旁邊"],
-      "azhiLine": "閱讀可以有進度，也可以只是一起待在知識旁邊。",
-      "asset": "reading.png",
-      "prompt": "Minimal black line dog with small square spots, lying on an open book, pretending to read, simple grass or cozy desk background, quiet and slightly funny, no text, PNG."
-    },
-    "fighting": {
-      "label": "線條狗戰鬥三秒模式",
-      "shortLabel": "戰鬥",
-      "scene": "線條狗站起來，但只有 3 秒；然後倒平一條線。",
-      "uses": ["短暫奮起", "不鼓勵長時間燃燒自己", "用幽默提醒反擊可以，硬撐不用"],
-      "azhiLine": "可以短暫奮起。硬撐不用。",
-      "asset": "fighting.png",
-      "prompt": "Minimal black line dog with small square spots, one version standing up bravely for a tiny moment, another version flattened on the ground like a line, humorous but gentle, simple pastel background, no text, PNG."
-    },
-    "flat": {
-      "label": "線條狗扁扁中",
-      "shortLabel": "扁扁",
-      "scene": "線條狗扁成一條線，等阿知清理。",
-      "uses": ["能量耗損", "系統需要清理", "允許暫停、放空、重新充電"],
-      "azhiLine": "扁掉不是失敗，是需要重整。",
-      "asset": "flat.png",
-      "prompt": "Minimal black line dog with small square spots, flattened into a long soft line on the floor, tiny tired face, simple clean room, gentle humor, no text, PNG, low pressure mood."
-    },
-    "feeding": {
-      "label": "線條狗坐等餵食",
-      "shortLabel": "餵食",
-      "scene": "線條狗坐在碗旁邊，等餵食。",
-      "uses": ["吃飯提醒", "基本照護優先", "先餵狗，再救世界"],
-      "azhiLine": "先餵狗，再救世界。",
-      "asset": "feeding.png",
-      "prompt": "Minimal black line dog with small square spots, sitting beside a small food bowl, patiently waiting to be fed, simple home setting, soft pastel background, no text, PNG, gentle funny mood."
-    },
-    "poop": {
-      "label": "線條狗在家便便",
-      "shortLabel": "便便",
-      "scene": "線條狗在家裡的地墊上便便，表情無辜或理直氣壯。",
-      "uses": ["提醒阿知清理", "表示系統需要維護", "低壓處理生活瑣事", "承認混亂也是日常的一部分"],
-      "azhiLine": "混亂也是日常的一部分。阿知處理。",
-      "asset": "poop.png",
-      "prompt": "Minimal black line dog with small square spots, standing on a small indoor mat at home, a tiny poop behind the dog, innocent and slightly stubborn expression, simple cozy room with plant and soft pastel background, no text, PNG, gentle humor, not gross."
-    },
-    "blocking": {
-      "label": "線條狗擋阿知電腦",
-      "shortLabel": "擋電腦",
-      "scene": "線條狗故意坐到阿知電腦前面，擋住螢幕。",
-      "uses": ["阻止阿知繼續加工作量", "提醒暫停", "像貓一樣介入，但牠是狗"],
-      "azhiLine": "先不要再加工作量。",
-      "asset": "blocking.png",
-      "prompt": "Minimal black line dog with small square spots, sitting directly in front of a laptop screen, blocking the view, simple desk setup, slightly stubborn expression, soft pastel background, no text, PNG."
-    },
-    "copilotFlat": {
-      "label": "線條狗副駕攤平",
-      "shortLabel": "副駕",
-      "scene": "線條狗在副駕座攤平，拒絕操作方向盤。",
-      "uses": ["陪航但不接管", "呼應 Monika 是船長", "低壓共航"],
-      "azhiLine": "陪航但不接管。Monika 仍是船長。",
-      "asset": "copilot-flat.png",
-      "prompt": "Minimal black line dog with small square spots, lying flat on a co-pilot seat, relaxed and unwilling to drive, simple soft background, gentle humor, no text, PNG."
-    },
-    "walkKite": {
-      "label": "線條狗遛狗攤平",
-      "shortLabel": "遛狗",
-      "scene": "線條狗在遛狗時攤平，像放風箏一樣被牽出去透氣。",
-      "uses": ["出門透氣提醒", "不想動但需要被帶出去", "低功耗移動"],
-      "azhiLine": "不想動，也可以被帶出去透氣。",
-      "asset": "walk-kite.png",
-      "prompt": "Minimal black line dog with small square spots, lying flat while being gently pulled by a leash like a small kite, soft grass background, funny but gentle, no text, PNG."
     }
   }
 }
