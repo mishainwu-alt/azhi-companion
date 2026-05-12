@@ -1,26 +1,23 @@
-const CACHE_NAME = "azhi-companion-v22";
+const CACHE_NAME = "azhi-companion-v23";
 const SHELL_ASSETS = [
   "./",
   "./index.html",
-  "./supernote.html",
   "./styles.css",
+  "./app.js?v=23",
+  "./manifest.webmanifest?v=23",
+  "./supernote.html",
   "./supernote.css",
-  "./app.js",
   "./supernote.js",
-  "./manifest.webmanifest",
-  "./icon.svg",
   "./assets/fonts/ChenYuluoyan-Thin.ttf",
   "./assets/fonts/Wind-Regular_0.otf",
-  "./assets/icons/icon-192.png",
-  "./assets/icons/icon-512.png",
+  "./assets/icons/icon-192.png?v=23",
+  "./assets/icons/icon-512.png?v=23",
   "./assets/preview/azhi-og.png",
   "./assets/line-dog/line-dog-modes.json",
 ];
 
 self.addEventListener("install", (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(SHELL_ASSETS))
-  );
+  event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(SHELL_ASSETS)));
   self.skipWaiting();
 });
 
@@ -35,10 +32,7 @@ self.addEventListener("activate", (event) => {
 
 self.addEventListener("fetch", (event) => {
   const request = event.request;
-  if (request.method !== "GET" || new URL(request.url).origin !== self.location.origin) {
-    return;
-  }
-
+  if (request.method !== "GET" || new URL(request.url).origin !== self.location.origin) return;
   event.respondWith(
     fetch(request)
       .then((response) => {
