@@ -1,9 +1,12 @@
-const CACHE_NAME = "azhi-companion-v20";
+const CACHE_NAME = "azhi-companion-v22";
 const SHELL_ASSETS = [
   "./",
   "./index.html",
+  "./supernote.html",
   "./styles.css",
+  "./supernote.css",
   "./app.js",
+  "./supernote.js",
   "./manifest.webmanifest",
   "./icon.svg",
   "./assets/fonts/ChenYuluoyan-Thin.ttf",
@@ -11,6 +14,7 @@ const SHELL_ASSETS = [
   "./assets/icons/icon-192.png",
   "./assets/icons/icon-512.png",
   "./assets/preview/azhi-og.png",
+  "./assets/line-dog/line-dog-modes.json",
 ];
 
 self.addEventListener("install", (event) => {

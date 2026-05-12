@@ -182,7 +182,7 @@ button {
 .control-bubble {
   position: fixed;
   right: max(18px, env(safe-area-inset-right));
-  bottom: max(18px, env(safe-area-inset-bottom));
+  bottom: max(44px, calc(env(safe-area-inset-bottom) + 18px));
   z-index: 20;
   display: grid;
   justify-items: end;
@@ -231,7 +231,7 @@ button {
   display: grid;
   gap: 10px;
   width: 100%;
-  max-height: min(68svh, 560px);
+  max-height: min(74svh, 600px);
   overflow: auto;
   scrollbar-gutter: stable;
   border: 1.7px solid rgba(31, 29, 27, 0.76);
@@ -866,11 +866,12 @@ h1 {
 
   .manga-panel {
     grid-column: 2;
-    justify-self: center;
+    justify-self: end;
     align-self: center;
     width: min(42vw, 480px);
     height: min(76svh, 520px);
     min-height: 0;
+    margin-right: clamp(12px, 3vw, 52px);
     place-items: center;
   }
 
@@ -913,7 +914,7 @@ h1 {
   .control-bubble {
     right: auto;
     left: max(16px, env(safe-area-inset-left));
-    bottom: max(12px, env(safe-area-inset-bottom));
+    bottom: max(54px, calc(env(safe-area-inset-bottom) + 18px));
     width: min(46vw, 430px);
     justify-items: start;
   }
@@ -933,7 +934,7 @@ h1 {
   }
 
   .control-panel {
-    max-height: min(82svh, 520px);
+    max-height: min(86svh, 560px);
     border-radius: 22px 22px 22px 8px;
   }
 

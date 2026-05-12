@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1404" height="1872" viewBox="0 0 1404 1872">
+  <rect width="1404" height="1872" fill="#fffefb"/>
+  <rect x="72" y="72" width="1260" height="1728" fill="none" stroke="#191919" stroke-width="3"/>
+  <line x1="390" y1="168" x2="390" y2="1488" stroke="#191919" stroke-width="2"/>
+  <line x1="72" y1="1488" x2="1332" y2="1488" stroke="#191919" stroke-width="2"/>
+  <line x1="72" y1="168" x2="1332" y2="168" stroke="#191919" stroke-width="2"/>
+  <text x="96" y="132" font-family="serif" font-size="38" fill="#191919">Date</text>
+  <text x="470" y="132" font-family="serif" font-size="38" fill="#191919">Topic</text>
+  <text x="96" y="222" font-family="serif" font-size="32" fill="#191919">Cue / 關鍵詞</text>
+  <text x="430" y="222" font-family="serif" font-size="32" fill="#191919">Notes / 主筆記</text>
+  <text x="96" y="1542" font-family="serif" font-size="32" fill="#191919">Summary / 阿知回收</text>
+  <g opacity="0.15" stroke="#191919" stroke-width="1">
+    <line x1="96" y1="300" x2="366" y2="300"/>
+    <line x1="96" y1="390" x2="366" y2="390"/>
+    <line x1="96" y1="480" x2="366" y2="480"/>
+    <line x1="96" y1="570" x2="366" y2="570"/>
+    <line x1="96" y1="660" x2="366" y2="660"/>
+    <line x1="96" y1="750" x2="366" y2="750"/>
+    <line x1="96" y1="840" x2="366" y2="840"/>
+    <line x1="96" y1="930" x2="366" y2="930"/>
+    <line x1="96" y1="1020" x2="366" y2="1020"/>
+    <line x1="96" y1="1110" x2="366" y2="1110"/>
+    <line x1="96" y1="1200" x2="366" y2="1200"/>
+    <line x1="96" y1="1290" x2="366" y2="1290"/>
+    <line x1="430" y1="300" x2="1296" y2="300"/>
+    <line x1="430" y1="390" x2="1296" y2="390"/>
+    <line x1="430" y1="480" x2="1296" y2="480"/>
+    <line x1="430" y1="570" x2="1296" y2="570"/>
+    <line x1="430" y1="660" x2="1296" y2="660"/>
+    <line x1="430" y1="750" x2="1296" y2="750"/>
+    <line x1="430" y1="840" x2="1296" y2="840"/>
+    <line x1="430" y1="930" x2="1296" y2="930"/>
+    <line x1="430" y1="1020" x2="1296" y2="1020"/>
+    <line x1="430" y1="1110" x2="1296" y2="1110"/>
+    <line x1="430" y1="1200" x2="1296" y2="1200"/>
+    <line x1="430" y1="1290" x2="1296" y2="1290"/>
+    <line x1="96" y1="1626" x2="1296" y2="1626"/>
+    <line x1="96" y1="1710" x2="1296" y2="1710"/>
+  </g>
+  <g transform="translate(1110 1510)" fill="none" stroke="#191919" stroke-linecap="round" stroke-linejoin="round" opacity="0.75">
+    <circle cx="80" cy="86" r="56" stroke-width="4"/>
+    <path d="M42 96c18 18 56 18 76 0" stroke-width="4"/>
+    <path d="M52 74c12-14 24-14 36 0" stroke-width="4"/>
+    <path d="M96 74c12-14 24-14 36 0" stroke-width="4"/>
+    <path d="M44 42c20-30 58-36 94-14" stroke-width="4"/>
+    <path d="M136 54c16 18 18 38 10 58" stroke-width="4"/>
+    <text x="28" y="176" font-family="serif" font-size="24" fill="#191919" stroke="none">A-Zhi</text>
+  </g>
+</svg>

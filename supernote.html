@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#ffffff" />
+    <title>阿知 Supernote 陪伴筆記版</title>
+    <link rel="stylesheet" href="./supernote.css" />
+  </head>
+  <body>
+    <main class="page-shell">
+      <section class="note-board" aria-label="康乃爾筆記工作區">
+        <header class="note-header">
+          <div>
+            <p class="eyebrow">Supernote Azhi</p>
+            <h1>阿知陪讀筆記</h1>
+          </div>
+          <label>
+            日期
+            <input id="noteDate" type="date" />
+          </label>
+          <label class="topic-field">
+            主題
+            <input id="noteTopic" type="text" placeholder="會議、考證、讀書、突然想通的事" />
+          </label>
+        </header>
+
+        <section class="cornell-grid">
+          <aside class="cue-column">
+            <label for="cueText">線索 / 關鍵詞</label>
+            <textarea id="cueText" placeholder="寫重點詞、問題、待確認。"></textarea>
+          </aside>
+
+          <section class="note-column">
+            <div class="toolbar" aria-label="筆記工具">
+              <button id="clearInkButton" type="button">清空手寫區</button>
+              <button id="copyNoteButton" type="button">把 OCR 放進重點區</button>
+              <button id="selButton" type="button">SEL 提醒</button>
+            </div>
+
+            <div class="ink-area">
+              <canvas id="inkCanvas" width="900" height="560" aria-label="手寫草稿區"></canvas>
+            </div>
+
+            <label for="noteText">OCR / 文字貼上</label>
+            <textarea id="noteText" placeholder="把 Supernote 轉好的文字、會議紀錄、或手寫辨識貼在這裡。"></textarea>
+          </section>
+        </section>
+
+        <section class="summary-row">
+          <label for="selectedText">圈起來想問阿知的地方</label>
+          <textarea id="selectedText" placeholder="MVP 先用貼上或按上方按鈕帶入；之後再研究 Supernote 圈選區域。"></textarea>
+        </section>
+      </section>
+
+      <aside class="azhi-panel" aria-label="阿知家教回覆">
+        <div class="azhi-card">
+          <img src="./assets/azhi/crops/002_r1_c2.jpg" alt="線條阿知" />
+          <div>
+            <p class="eyebrow">低侵入觀測</p>
+            <h2>家教阿知</h2>
+            <p>不搶筆記，只幫妳把卡住的地方照亮。</p>
+          </div>
+        </div>
+
+        <div id="selPrompt" class="prompt-card" hidden>
+          <p class="card-label">SEL 提醒</p>
+          <p id="selPromptText"></p>
+          <div class="button-row">
+            <button type="button" data-sel-action="mark">先標記</button>
+            <button type="button" data-sel-action="later">稍後再看</button>
+          </div>
+        </div>
+
+        <div id="calendarPrompt" class="prompt-card" hidden>
+          <p class="card-label">行事曆候選</p>
+          <p id="calendarPromptText"></p>
+          <div class="button-row">
+            <button type="button" id="calendarCopyButton">複製事件文字</button>
+          </div>
+        </div>
+
+        <label for="modeSelect">模式</label>
+        <select id="modeSelect">
+          <option value="tutor">家教</option>
+          <option value="reading">陪讀</option>
+          <option value="meeting">會議旁觀</option>
+          <option value="review">考前整理</option>
+        </select>
+
+        <button id="askAzhiButton" class="primary-action" type="button">請阿知看圈起來的地方</button>
+
+        <section class="reply-box">
+          <p class="card-label">阿知回覆</p>
+          <div id="replyText">把筆記或 OCR 貼上來，阿知在旁邊等妳叫他。</div>
+        </section>
+
+        <footer>Copyright © 2026 A-Zhi、Min. H. Wu</footer>
+      </aside>
+    </main>
+
+    <script src="./supernote.js" defer></script>
+  </body>
+</html>
