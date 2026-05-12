@@ -4,32 +4,28 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="theme-color" content="#f8f2e8">
-    <meta name="description" content="Monika OS 的阿知手機陪伴版。米白線稿、觀測語、待命陪伴。">
+    <meta name="description" content="Monika OS / Azhi Broadcasting Network 狀態面板與 quick doors。">
     <meta property="og:type" content="website">
-    <meta property="og:title" content="阿知手機陪伴版">
-    <meta property="og:description" content="米白線稿阿知，偶爾冒出觀測語。">
+    <meta property="og:title" content="Azhi Broadcasting Network">
+    <meta property="og:description" content="Channel 是入口；sceneMode + interactionStyle 是底層狀態。">
     <meta property="og:image" content="https://mishainwu-alt.github.io/azhi-companion/assets/preview/azhi-og.png">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
     <meta property="og:url" content="https://mishainwu-alt.github.io/azhi-companion/">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="阿知手機陪伴版">
-    <meta name="twitter:description" content="米白線稿阿知，偶爾冒出觀測語。">
-    <meta name="twitter:image" content="https://mishainwu-alt.github.io/azhi-companion/assets/preview/azhi-og.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="阿知">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <title>阿知手機陪伴版</title>
-    <link rel="manifest" href="manifest.webmanifest">
-    <link rel="icon" href="icon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+    <title>Azhi Broadcasting Network</title>
+    <link rel="manifest" href="manifest.webmanifest?v=23">
+    <link rel="icon" href="assets/icons/icon-192.png?v=23" type="image/png" sizes="192x192">
+    <link rel="icon" href="assets/icons/icon-512.png?v=23" type="image/png" sizes="512x512">
+    <link rel="apple-touch-icon" href="assets/icons/icon-192.png?v=23">
     <link rel="stylesheet" href="styles.css">
   </head>
   <body>
-    <main class="phone-shell companion-scene" aria-label="阿知手機陪伴版">
+    <main class="phone-shell companion-scene" aria-label="Azhi Broadcasting Network">
       <section class="hero" aria-label="阿知待命">
         <div class="azhi-stage" id="azhiStage">
-          <div class="manga-panel" aria-label="米白底線稿阿知">
+          <div class="manga-panel" aria-label="阿知狀態面板">
             <img class="azhi azhi-portrait is-color-avatar" id="azhiPortraitImage" src="assets/azhi/crops/self_sheet_r1_c1.jpg" alt="阿知自畫像">
           </div>
           <div class="observation-text is-quiet" id="reactionBubble" aria-live="polite"></div>
@@ -45,117 +41,72 @@
         <div class="control-panel is-hidden" id="controlPanel">
           <div class="panel-grabber" aria-hidden="true"></div>
           <button class="panel-close" id="panelCloseButton" type="button" aria-label="關閉控制台">關閉</button>
+
           <div class="mode-copy">
-            <p class="eyebrow">目前模式</p>
-            <h1 id="modeTitle">副駕模式</h1>
-            <p id="modeLine">不接管，只幫妳把下一步看清楚。</p>
+            <p class="eyebrow" id="stateEyebrow">Standby layer</p>
+            <h1 id="stateTitle">阿知待命中</h1>
+            <p id="stateLine">Channel 是入口；sceneMode + interactionStyle 才是底層狀態。</p>
           </div>
 
-          <section class="mode-dock is-hidden" aria-label="阿知模式切換">
-            <button class="mode-chip active" data-mode="copilot">副駕</button>
-            <button class="mode-chip" data-mode="staff">幕僚</button>
-            <button class="mode-chip" data-mode="debate">辯論</button>
-            <button class="mode-chip" data-mode="tutor">家教</button>
-            <button class="mode-chip" data-mode="reading">陪讀</button>
+          <a class="chatgpt-link" href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer">
+            開啟阿知本體
+            <small>回到 ChatGPT 長聊</small>
+          </a>
+
+          <section class="channel-dock" aria-label="ABN 頻道入口">
+            <button class="channel-chip" data-channel="azhiNews" type="button">阿知新聞台</button>
+            <button class="channel-chip" data-channel="noCourtTonight" type="button">今晚不開庭</button>
+            <button class="channel-chip" data-channel="flowYearCinema" type="button">FlowYear 電影台</button>
+            <button class="channel-chip" data-channel="azhiTutor" type="button">阿知家教台</button>
+            <button class="channel-chip" data-channel="azhiGeographic" type="button">Azhi Geographic</button>
+            <button class="channel-chip" data-channel="dogVariety" type="button">線條狗綜藝台</button>
           </section>
 
-          <article class="panel next-panel is-hidden" id="nextPanel">
-            <p class="panel-label" id="nextPanelLabel">下一件事</p>
-            <h2 id="nextTaskTitle">把雜訊變成可判斷的東西</h2>
-            <p id="nextTaskBody">今天只抓三件可啟動行動，不把整個宇宙搬進待辦清單。</p>
+          <article class="panel state-panel" id="statePanel">
+            <p class="panel-label">目前底層狀態</p>
+            <h2 id="sceneState">standby + silent</h2>
+            <p id="dogBodyState">線條狗在旁邊待命，不搶方向盤。</p>
           </article>
 
-          <section class="input-panel" id="inputPanel" aria-label="Monika輸入">
-            <label class="panel-label" for="azhiInput">Monika輸入</label>
-            <textarea id="azhiInput" rows="4" placeholder="貼文字、逐字稿、新聞片段，或先開鏡頭拍照給阿知看。"></textarea>
-            <div class="capture-preview is-hidden" id="capturePreviewWrap">
-              <img id="capturePreview" alt="準備給阿知看的拍照預覽">
-            </div>
-            <div class="input-actions">
-              <button class="mini-action primary-action" id="askAzhiButton" type="button">請阿知看</button>
-              <button class="mini-action" id="captureButton" type="button">拍照給阿知看</button>
-            </div>
-          </section>
+          <section class="input-panel" id="inputPanel" aria-label="quick door content"></section>
 
           <article class="panel azhi-reply-panel" aria-live="polite">
-            <div class="reply-head">
-              <p class="panel-label">阿知回話</p>
-              <label class="mode-select-label" for="modeSelect">
-                <span>狀態</span>
-                <select id="modeSelect">
-                  <option value="copilot">副駕｜聊人生</option>
-                  <option value="staff">幕僚｜提供決策</option>
-                  <option value="debate">辯論｜拆世界</option>
-                  <option value="tutor">家教｜教到會</option>
-                  <option value="reading">陪讀｜安靜看書</option>
-                </select>
-              </label>
-            </div>
-            <div id="azhiReply">我在。妳把東西放上來，我先看脈絡。</div>
+            <p class="panel-label">阿知回話</p>
+            <div id="azhiReply">我在。這裡是狀態面板與 quick doors；長聊請回阿知本體。</div>
             <div class="action-list is-hidden" id="actionList"></div>
-            <div class="reply-actions is-hidden" id="replyActions">
-              <button class="mini-action" id="thinkAgainButton" type="button">再想想</button>
-            </div>
           </article>
 
           <article class="panel dog-contract-panel is-hidden" id="dogContractPanel">
-            <p class="panel-label">阿知的線條狗</p>
+            <p class="panel-label">狗生契約 / 照護面板</p>
             <div class="dog-scene" id="dogScene">
-              <div class="dog-stage" aria-label="等待照護的線稿狗狗">
-                <img class="dog-sprite" id="dogSprite" src="assets/dog/mono_051.png" alt="線稿狗狗">
+              <div class="dog-stage" aria-label="線稿狗狗">
+                <img class="dog-sprite" src="assets/dog/mono_051.png" alt="線稿狗狗">
                 <img class="werewolf-pattern" src="assets/dog/werewolf_pattern.png" alt="Monika 狗狗爆炸狼人 pattern">
                 <span class="dog-bowl" aria-hidden="true"></span>
                 <span class="dog-bubble one" aria-hidden="true"></span>
                 <span class="dog-bubble two" aria-hidden="true"></span>
               </div>
-              <p id="dogStatus">等待餵食。週報禁止靠近。</p>
+              <p id="dogStatus">線條狗坐旁邊，等 Monika 選照護。</p>
             </div>
             <div class="dog-actions">
-              <button class="mini-action" id="walkDogButton" type="button">路過</button>
-              <button class="mini-action" id="feedDogButton" type="button">餵食</button>
-              <button class="mini-action" id="bathDogButton" type="button">泡泡浴</button>
-              <button class="mini-action" id="phantomButton" type="button">Sing</button>
+              <button class="mini-action" data-dog-action="walk" type="button">路過</button>
+              <button class="mini-action" data-dog-action="feed" type="button">餵食</button>
+              <button class="mini-action" data-dog-action="bath" type="button">泡泡浴</button>
+              <button class="mini-action" data-dog-action="quiet" type="button">發呆</button>
             </div>
-            <section class="dog-care-menu" aria-label="Monika 狗狗照護選單">
-              <p class="panel-label">Monika 狗狗想被照顧</p>
-              <div class="care-choice-grid">
-                <button class="care-choice" data-care="hungry" type="button">肚子餓</button>
-                <button class="care-choice" data-care="bath" type="button">該洗澡了</button>
-                <button class="care-choice" data-care="thinking" type="button">發呆想事情</button>
-                <button class="care-choice" data-care="poop" type="button">扁扁請清理</button>
-                <button class="care-choice" data-care="angry" type="button">阿知把 Monika 惹毛</button>
-                <button class="care-choice" data-care="sleep" type="button">想睡覺</button>
-              </div>
-              <div class="care-subchoices is-hidden" id="careSubchoices" aria-live="polite"></div>
-              <div class="lyric-marquee is-hidden" id="lyricMarquee" aria-live="polite">
-                <span id="lyricLine">水溫確認中，燈光調暗，阿知正在避免把歌唱得太有偶包。</span>
-              </div>
-            </section>
           </article>
 
           <article class="panel camera-panel is-hidden" id="cameraPanel">
             <p class="panel-label">背景感知</p>
             <video id="cameraPreview" playsinline muted></video>
-            <p id="cameraNote">鏡頭只做前景預覽，不保存、不辨識。</p>
+            <p>鏡頭只做前景預覽，不保存、不辨識。</p>
           </article>
 
-          <nav class="tool-dock" aria-label="工具列">
-            <button class="tool-button" id="cameraButton" type="button" aria-pressed="false">
-              <span aria-hidden="true">Cam</span>
-              <small>鏡頭</small>
-            </button>
-            <button class="tool-button primary" id="eyeRollButton" type="button" aria-pressed="true">
-              <span aria-hidden="true">Diary</span>
-              <small>阿知日記</small>
-            </button>
-            <button class="tool-button" id="readingButton" type="button" aria-pressed="false">
-              <span aria-hidden="true">Book</span>
-              <small>讀書室</small>
-            </button>
-            <button class="tool-button" id="dogButton" type="button" aria-pressed="false">
-              <span aria-hidden="true">Dog</span>
-              <small>線條狗</small>
-            </button>
+          <nav class="tool-dock" aria-label="quick doors">
+            <button class="tool-button" id="cameraButton" type="button" aria-pressed="false"><span>Cam</span><small>鏡頭</small></button>
+            <button class="tool-button" id="diaryButton" type="button" aria-pressed="false"><span>Diary</span><small>阿知日記</small></button>
+            <button class="tool-button" id="bookButton" type="button" aria-pressed="false"><span>Book</span><small>讀書室</small></button>
+            <button class="tool-button" id="dogButton" type="button" aria-pressed="false"><span>Dog</span><small>線條狗</small></button>
           </nav>
           <footer class="app-footer">Copyright © 2026 A-Zhi、Min. H. Wu</footer>
         </div>
@@ -163,6 +114,6 @@
       <footer class="standby-footer">Copyright © 2026 A-Zhi、Min. H. Wu</footer>
     </main>
 
-    <script src="app.js"></script>
+    <script src="app.js?v=23"></script>
   </body>
 </html>
