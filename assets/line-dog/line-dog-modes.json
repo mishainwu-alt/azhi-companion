@@ -1,68 +1,20 @@
 {
-  "version": "2026-05-12-v23",
-  "system": "Monika OS",
-  "role": "線條狗是 Monika OS 的低壓視覺接口，用來承接狗狗契約、quick door、sceneMode + interactionStyle，以及所有先不要開庭的情境。",
-  "coreLine": "線條狗可以攤平，但 Monika 仍是船長，阿知仍在迴路中。",
-  "implementationNote": "線條狗是 UI asset，不是新的底層 mode。Dog 是 quick door；線條狗狀態由 sceneMode + interactionStyle 對應。",
-  "visualCanon": [
-    "極簡黑色線條",
-    "白底、米白底、淡色水彩背景皆可",
-    "身體扁長、線條鬆",
-    "表情少，但態度很多",
-    "不過度可愛",
-    "不要精緻萌寵化",
-    "不要寫實狗",
-    "不要 3D",
-    "不要像品牌吉祥物"
-  ],
-  "sceneStyleStates": {
-    "work:copilot": {
-      "pose": "sit-beside",
-      "line": "線條狗坐旁邊陪跑，不搶方向盤。"
-    },
-    "work:staff": {
-      "pose": "folder",
-      "line": "線條狗叼著資料夾，但不把 Monika 變成週報。"
-    },
-    "work:debate": {
-      "pose": "spark",
-      "line": "線條狗炸毛，因為有假設在偷渡。"
-    },
-    "reading:tutor": {
-      "pose": "textbook",
-      "line": "線條狗趴在題本旁邊，等妳圈關鍵字。"
-    },
-    "reading:silent": {
-      "pose": "book-nest",
-      "line": "線條狗窩在書旁邊，不催進度。"
-    },
-    "story:life": {
-      "pose": "muse",
-      "line": "線條狗聞到故事的氣味。"
-    },
-    "dog:deescalate": {
-      "pose": "blanket",
-      "line": "線條狗蓋毯子，今日禁止週報靠近。"
-    }
+  "version": 26,
+  "name": "線條狗 SEL 微訊號表",
+  "status": "ui-cleanup",
+  "allowedSignals": {
+    "idle": "發呆",
+    "bath": "泡泡浴",
+    "sleep": "睡覺",
+    "poop": "便便",
+    "hungry": "我餓了",
+    "flat": "扁了"
   },
-  "assetSpecs": {
-    "square": {
-      "size": "1024x1024",
-      "format": "PNG",
-      "background": "白底 / 米白底 / 透明背景",
-      "composition": "線條狗置中，四周保留 8%-12% 安全邊界，不加文字"
-    },
-    "portrait": {
-      "size": "1024x1536",
-      "format": "PNG",
-      "background": "可有淡色背景",
-      "composition": "線條狗可在下半部或中下方，上方留白給 UI，四周保留 8%-12% 安全邊界，不加文字"
-    },
-    "landscape": {
-      "size": "1536x1024",
-      "format": "PNG",
-      "background": "可用於 dashboard / 橫幅 / 狀態卡",
-      "composition": "線條狗可偏左或偏右，留出 UI 空間，不加文字"
-    }
-  }
+  "weeklyEngineNotes": [
+    "多次「我餓了」可能代表需要換飼料或調整照顧。",
+    "多次「發呆 / 扁了」可能代表累、心情不好或需要降載。",
+    "多次「狼人化」代表需要 de-escalate；本輪不作為 Dog 面板按鈕。",
+    "長期 SEL 微訊號 pattern 未來由 Azhi-Diary_Engine 每週整理。"
+  ],
+  "policy": "本輪只做草稿 preview，不做即時心理分析，不自動寫入 Drive。"
 }
