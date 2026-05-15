@@ -529,6 +529,16 @@ function sampleCameraObservation() {
   return cameraObservationFallbacks[Math.floor(Math.random() * cameraObservationFallbacks.length)];
 }
 
+function isLikelyInAppBrowser() {
+  const ua = navigator.userAgent || "";
+  return /Line\/|FBAN|FBAV|Instagram|MicroMessenger|Twitter|LinkedInApp|GSA|ChatGPT/i.test(ua);
+}
+
+function setCameraFallbackMessage(message) {
+  const note = document.querySelector("#cameraNote");
+  if (note) note.textContent = message;
+}
+
 function draftKey(targetKey, title, markdown) {
   return `${targetKey}:${hashText(`${title}\n${markdown}`)}`;
 }
@@ -582,7 +592,21 @@ async function confirmDiaryWrite() {
 }
 
 async function startCamera() {
-  if (!navigator.mediaDevices?.getUserMedia || !elements.cameraPreview) return;
+  if (!elements.cameraPreview) return;
+
+  if (!window.isSecureContext) {
+    setCameraFallbackMessage("請用 HTTPS 或已安裝的 PWA 開啟以使用鏡頭。");
+    return;
+  }
+
+  const canAskForCamera = Boolean(navigator.mediaDevices?.getUserMedia);
+  if (!canAskForCamera) {
+    setCameraFallbackMessage(isLikelyInAppBrowser()
+      ? "請用系統瀏覽器開啟以使用鏡頭。"
+      : "這台裝置暫時不讓鏡頭進來。沒有關係，先用文字也可以。");
+    return;
+  }
+
   try {
     if (!state.cameraStream) {
       state.cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" }, audio: false });
@@ -590,10 +614,12 @@ async function startCamera() {
     elements.cameraPreview.srcObject = state.cameraStream;
     await elements.cameraPreview.play();
   } catch (error) {
-    document.querySelector("#cameraNote").textContent = "這台裝置暫時不讓鏡頭進來。沒有關係，先用文字也可以。";
+    const blockedByShell = isLikelyInAppBrowser() || window.self !== window.top;
+    setCameraFallbackMessage(blockedByShell
+      ? "請用系統瀏覽器開啟以使用鏡頭。"
+      : "這台裝置暫時不讓鏡頭進來。沒有關係，先用文字也可以。");
   }
 }
-
 function bindEvents() {
   elements.bubbleToggle.addEventListener("click", () => setPanelOpen(elements.controlPanel.classList.contains("is-hidden")));
   elements.panelCloseButton.addEventListener("click", () => setPanelOpen(false));

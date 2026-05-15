@@ -1,14 +1,14 @@
-const CACHE_NAME = "azhi-companion-v25-1-safe-phrases";
+const CACHE_NAME = "azhi-companion-v25-1-safe-camera";
 
 const CORE_ASSETS = [
   "./",
   "./index.html",
-  "./styles.css?v=25-safe-phrases",
-  "./app.js?v=25-safe-phrases",
-  "./drive-targets.config.js?v=25-safe-phrases",
-  "./flowyear-standby-phrases.adapter.js?v=25-safe-phrases",
-  "./standby-phrases.json?v=25-safe-phrases",
-  "./manifest.webmanifest?v=25-safe-phrases",
+  "./styles.css?v=25-safe-camera",
+  "./app.js?v=25-safe-camera",
+  "./drive-targets.config.js?v=25-safe-camera",
+  "./flowyear-standby-phrases.adapter.js?v=25-safe-camera",
+  "./standby-phrases.json?v=25-safe-camera",
+  "./manifest.webmanifest?v=25-safe-camera",
   "./assets/icons/icon-192.png?v=25",
   "./assets/icons/icon-512.png?v=25"
 ];
