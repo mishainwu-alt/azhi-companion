@@ -1,0 +1,81 @@
+{
+  "version": 2,
+  "sourceFolder": {
+    "label": "Monika OS / 11_線條狗_Image_Library",
+    "folderId": "1uoaDjOBDWfrQjjyZXljwkFhjTtWrpIR_"
+  },
+  "status": "proposed-mapping-only",
+  "note": "只整理 Drive 圖檔，不覆蓋原檔，不直接上 UI。",
+  "currentUiState": {
+    "status": "neutral-placeholder",
+    "reason": "Drive 圖庫尚未正式接入；為避免誤用非 canon 圖，本機 UI 只顯示中性佔位。",
+    "uiPolicy": "不要自行生成、手繪或使用 temporary SVG 冒充正式線條狗資產。"
+  },
+  "allowedSignals": ["發呆", "泡泡浴", "睡覺", "便便", "我餓了", "扁了"],
+  "weeklyPatternNote": "狼人化不是本輪按鈕；若出現高張力記錄，未來由 Azhi-Diary_Engine 每週整理。",
+  "assets": [
+    {
+      "id": "1Ye7XBUtQnAbnnkdM3z0abPY7bXE3lm9U",
+      "originalFileName": "ChatGPT Image 2026年5月12日 下午01_41_28.png",
+      "proposedFileName": "line-dog-idle.png",
+      "mode": "發呆",
+      "useCase": "低壓停靠 / 今日先留白",
+      "status": "needs-monika-confirmation",
+      "notes": "候選對應，不覆蓋原檔。"
+    },
+    {
+      "id": "1IUdAwQ0FKsJ6iBHyHaYC0Deu65GHRYmA",
+      "originalFileName": "ChatGPT Image 2026年5月12日 下午01_32_27.png",
+      "proposedFileName": "line-dog-sleep.png",
+      "mode": "睡覺",
+      "useCase": "night / bedtime",
+      "status": "needs-monika-confirmation",
+      "notes": "睡前故事可用候選。"
+    },
+    {
+      "id": "1gJywBVqzt0hFDWNoh1zXr0zVZz6zsKoE",
+      "originalFileName": "ChatGPT Image 2026年5月12日 下午01_32_17.png",
+      "proposedFileName": "line-dog-bath.png",
+      "mode": "泡泡浴",
+      "useCase": "de-escalate / 泡泡浴 BGM",
+      "status": "needs-monika-confirmation",
+      "notes": "可搭配 12_sing a song placeholder。"
+    },
+    {
+      "id": "1ST4gNxpJ3r3MDaC9nAK1SrlgrZM2OURH",
+      "originalFileName": "ChatGPT Image 2026年5月12日 下午01_31_39.png",
+      "proposedFileName": "line-dog-flat.png",
+      "mode": "扁了",
+      "useCase": "累 / 心情不好 / 需要降載",
+      "status": "needs-monika-confirmation",
+      "notes": "候選對應，不直接上 UI。"
+    },
+    {
+      "id": "1sV9WpCZ51RIA3vkhhkqw8ummNgAUuIp6",
+      "originalFileName": "ChatGPT Image 2026年5月12日 下午01_31_23.png",
+      "proposedFileName": "line-dog-werewolf-note.png",
+      "mode": "狼人化觀察",
+      "useCase": "先不要開庭 / de-escalate 記錄",
+      "status": "needs-monika-confirmation",
+      "notes": "不是本輪按鈕；未來可進每週整理。"
+    },
+    {
+      "id": "1ejnQaH8286R6Nu817NgzG6S-vWEs4Ddz",
+      "originalFileName": "ChatGPT Image 2026年5月12日 下午01_31_14.png",
+      "proposedFileName": "line-dog-poop.png",
+      "mode": "便便",
+      "useCase": "照顧事件記錄",
+      "status": "needs-monika-confirmation",
+      "notes": "候選對應，不覆蓋原檔。"
+    },
+    {
+      "id": "10XQCRyfj6ouq5g6qs5KBQcTsxVSgZbMR",
+      "originalFileName": "ChatGPT Image 2026年5月12日 下午01_31_03.png",
+      "proposedFileName": "line-dog-hungry.png",
+      "mode": "我餓了",
+      "useCase": "可能需要換飼料或調整照顧",
+      "status": "needs-monika-confirmation",
+      "notes": "候選對應，不覆蓋原檔。"
+    }
+  ]
+}
