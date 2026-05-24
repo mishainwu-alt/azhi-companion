@@ -527,41 +527,14 @@ p {
 }
 
 .dog-state-image {
-  width: min(210px, 80%);
-  aspect-ratio: 1;
-  object-fit: contain;
-  animation: softBreath 3.8s ease-in-out infinite;
-}
-
-.dog-placeholder {
-  position: relative;
-  width: min(170px, 70%);
-  aspect-ratio: 1.6 / 1;
-  display: grid;
-  place-items: center;
-  overflow: hidden;
-  border: 1px dashed rgba(33, 31, 27, 0.14);
+  display: block;
+  width: min(260px, 92%);
+  aspect-ratio: 4 / 3;
+  border: 1px solid rgba(33, 31, 27, 0.12);
   border-radius: 8px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(249, 247, 242, 0.78));
-}
-
-.dog-placeholder::before {
-  content: "線條狗資產待確認";
-  position: absolute;
-  bottom: 10px;
-  color: rgba(33, 31, 27, 0.42);
-  font-size: 12px;
-}
-
-.dog-placeholder span {
-  width: 64%;
-  height: 2px;
-  border-radius: 999px;
-  background: rgba(33, 31, 27, 0.2);
-  box-shadow:
-    -20px -9px 0 -0.75px rgba(33, 31, 27, 0.08),
-    18px 10px 0 -0.75px rgba(33, 31, 27, 0.08);
+  object-fit: contain;
+  object-position: center;
+  animation: softBreath 3.8s ease-in-out infinite;
 }
 
 .dog-scene h2 {

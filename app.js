@@ -41,38 +41,38 @@ const lineDogAssetLookup = {
   idle: {
     mode: "發呆",
     proposedFileName: "line-dog-idle.png",
-    status: "pending-canon-confirmation",
-    src: null,
+    status: "canon",
+    src: "assets/line-dog/line-dog-idle.png?v=25-line-dog-assets",
   },
   bath: {
     mode: "泡泡浴",
     proposedFileName: "line-dog-bath.png",
-    status: "pending-canon-confirmation",
-    src: null,
+    status: "canon",
+    src: "assets/line-dog/line-dog-bath.png?v=25-line-dog-assets",
   },
   sleep: {
     mode: "睡覺",
     proposedFileName: "line-dog-sleep.png",
-    status: "pending-canon-confirmation",
-    src: null,
+    status: "canon",
+    src: "assets/line-dog/line-dog-sleep.png?v=25-line-dog-assets",
   },
   poop: {
     mode: "便便",
     proposedFileName: "line-dog-poop.png",
-    status: "pending-canon-confirmation",
-    src: null,
+    status: "canon",
+    src: "assets/line-dog/line-dog-poop.png?v=25-line-dog-assets",
   },
   hungry: {
     mode: "我餓了",
     proposedFileName: "line-dog-hungry.png",
-    status: "pending-canon-confirmation",
-    src: null,
+    status: "canon",
+    src: "assets/line-dog/line-dog-hungry.png?v=25-line-dog-assets",
   },
   flat: {
     mode: "扁了",
     proposedFileName: "line-dog-flat.png",
-    status: "pending-canon-confirmation",
-    src: null,
+    status: "canon",
+    src: "assets/line-dog/line-dog-flat.png?v=25-line-dog-assets",
   },
 };
 
@@ -139,7 +139,7 @@ const elements = {
   readingButton: document.querySelector("#readingButton"),
   dogButton: document.querySelector("#dogButton"),
   dogContractPanel: document.querySelector("#dogContractPanel"),
-  dogPlaceholder: document.querySelector("#dogPlaceholder"),
+  dogStateImage: document.querySelector("#dogStateImage"),
   dogStatus: document.querySelector("#dogStatus"),
   dogStatusLine: document.querySelector("#dogStatusLine"),
   saveDogButton: document.querySelector("#saveDogButton"),
@@ -426,8 +426,10 @@ function setDogSignal(key) {
   const signal = dogSignals[key] || dogSignals.idle;
   const asset = lineDogAssetLookup[key] || lineDogAssetLookup.idle;
   state.currentDogSignal = key;
-  elements.dogPlaceholder.dataset.assetStatus = asset.status;
-  elements.dogPlaceholder.dataset.proposedFile = asset.proposedFileName;
+  elements.dogStateImage.src = asset.src;
+  elements.dogStateImage.alt = `線條狗${asset.mode}`;
+  elements.dogStateImage.dataset.assetStatus = asset.status;
+  elements.dogStateImage.dataset.proposedFile = asset.proposedFileName;
   elements.dogStatus.textContent = signal.title;
   elements.dogStatusLine.textContent = signal.line;
   document.querySelectorAll("[data-dog-action]").forEach((button) => {
