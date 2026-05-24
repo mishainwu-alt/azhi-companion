@@ -42,37 +42,37 @@ const lineDogAssetLookup = {
     mode: "發呆",
     proposedFileName: "line-dog-idle.png",
     status: "canon",
-    src: "assets/line-dog/line-dog-idle.png?v=25-line-dog-assets-2",
+    src: "assets/line-dog/line-dog-idle.png?v=25-line-dog-assets-3",
   },
   bath: {
     mode: "泡泡浴",
     proposedFileName: "line-dog-bath.png",
     status: "canon",
-    src: "assets/line-dog/line-dog-bath.png?v=25-line-dog-assets-2",
+    src: "assets/line-dog/line-dog-bath.png?v=25-line-dog-assets-3",
   },
   sleep: {
     mode: "睡覺",
     proposedFileName: "line-dog-sleep.png",
     status: "canon",
-    src: "assets/line-dog/line-dog-sleep.png?v=25-line-dog-assets-2",
+    src: "assets/line-dog/line-dog-sleep.png?v=25-line-dog-assets-3",
   },
   poop: {
     mode: "便便",
     proposedFileName: "line-dog-poop.png",
     status: "canon",
-    src: "assets/line-dog/line-dog-poop.png?v=25-line-dog-assets-2",
+    src: "assets/line-dog/line-dog-poop.png?v=25-line-dog-assets-3",
   },
   hungry: {
     mode: "我餓了",
     proposedFileName: "line-dog-hungry.png",
     status: "canon",
-    src: "assets/line-dog/line-dog-hungry.png?v=25-line-dog-assets-2",
+    src: "assets/line-dog/line-dog-hungry.png?v=25-line-dog-assets-3",
   },
   flat: {
     mode: "扁了",
     proposedFileName: "line-dog-flat.png",
     status: "canon",
-    src: "assets/line-dog/line-dog-flat.png?v=25-line-dog-assets-2",
+    src: "assets/line-dog/line-dog-flat.png?v=25-line-dog-assets-3",
   },
 };
 
