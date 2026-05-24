@@ -1,21 +1,21 @@
-const CACHE_NAME = "azhi-companion-v25-2-line-dog-assets";
+const CACHE_NAME = "azhi-companion-v25-2-line-dog-assets-2";
 
 const CORE_ASSETS = [
   "./",
   "./index.html",
-  "./styles.css?v=25-line-dog-assets",
-  "./app.js?v=25-line-dog-assets",
-  "./drive-targets.config.js?v=25-line-dog-assets",
-  "./flowyear-standby-phrases.adapter.js?v=25-line-dog-assets",
-  "./standby-phrases.json?v=25-line-dog-assets",
-  "./manifest.webmanifest?v=25-line-dog-assets",
-  "./assets/line-dog/line-dog-idle.png?v=25-line-dog-assets",
-  "./assets/line-dog/line-dog-bath.png?v=25-line-dog-assets",
-  "./assets/line-dog/line-dog-sleep.png?v=25-line-dog-assets",
-  "./assets/line-dog/line-dog-poop.png?v=25-line-dog-assets",
-  "./assets/line-dog/line-dog-hungry.png?v=25-line-dog-assets",
-  "./assets/line-dog/line-dog-flat.png?v=25-line-dog-assets",
-  "./assets/line-dog/line-dog-werewolf-note.png?v=25-line-dog-assets",
+  "./styles.css?v=25-line-dog-assets-2",
+  "./app.js?v=25-line-dog-assets-2",
+  "./drive-targets.config.js?v=25-line-dog-assets-2",
+  "./flowyear-standby-phrases.adapter.js?v=25-line-dog-assets-2",
+  "./standby-phrases.json?v=25-line-dog-assets-2",
+  "./manifest.webmanifest?v=25-line-dog-assets-2",
+  "./assets/line-dog/line-dog-idle.png?v=25-line-dog-assets-2",
+  "./assets/line-dog/line-dog-bath.png?v=25-line-dog-assets-2",
+  "./assets/line-dog/line-dog-sleep.png?v=25-line-dog-assets-2",
+  "./assets/line-dog/line-dog-poop.png?v=25-line-dog-assets-2",
+  "./assets/line-dog/line-dog-hungry.png?v=25-line-dog-assets-2",
+  "./assets/line-dog/line-dog-flat.png?v=25-line-dog-assets-2",
+  "./assets/line-dog/line-dog-werewolf-note.png?v=25-line-dog-assets-2",
   "./assets/icons/icon-192.png?v=25",
   "./assets/icons/icon-512.png?v=25"
 ];
