@@ -42,37 +42,37 @@ const lineDogAssetLookup = {
     mode: "發呆",
     proposedFileName: "line-dog-idle.png",
     status: "canon",
-    src: "assets/line-dog/line-dog-idle.png?v=25-line-dog-assets-3",
+    src: "assets/line-dog/line-dog-idle.png?v=25-mobile-ux-14",
   },
   bath: {
     mode: "泡泡浴",
     proposedFileName: "line-dog-bath.png",
     status: "canon",
-    src: "assets/line-dog/line-dog-bath.png?v=25-line-dog-assets-3",
+    src: "assets/line-dog/line-dog-bath.png?v=25-mobile-ux-14",
   },
   sleep: {
     mode: "睡覺",
     proposedFileName: "line-dog-sleep.png",
     status: "canon",
-    src: "assets/line-dog/line-dog-sleep.png?v=25-line-dog-assets-3",
+    src: "assets/line-dog/line-dog-sleep.png?v=25-mobile-ux-14",
   },
   poop: {
     mode: "便便",
     proposedFileName: "line-dog-poop.png",
     status: "canon",
-    src: "assets/line-dog/line-dog-poop.png?v=25-line-dog-assets-3",
+    src: "assets/line-dog/line-dog-poop.png?v=25-mobile-ux-14",
   },
   hungry: {
     mode: "我餓了",
     proposedFileName: "line-dog-hungry.png",
     status: "canon",
-    src: "assets/line-dog/line-dog-hungry.png?v=25-line-dog-assets-3",
+    src: "assets/line-dog/line-dog-hungry.png?v=25-mobile-ux-14",
   },
   flat: {
     mode: "扁了",
     proposedFileName: "line-dog-flat.png",
     status: "canon",
-    src: "assets/line-dog/line-dog-flat.png?v=25-line-dog-assets-3",
+    src: "assets/line-dog/line-dog-flat.png?v=25-mobile-ux-14",
   },
 };
 
@@ -278,6 +278,7 @@ function escapeHtml(value) {
     .replace(/'/g, "&#039;");
 }
 
+
 function openDoor(key) {
   state.activeDoor = key;
   elements.controlPanel.dataset.activeDoor = key;
@@ -285,10 +286,12 @@ function openDoor(key) {
 
   if (key === "standby") {
     setActiveButton(null);
+    showPanels({ reply: false });
     setHeader("我在。", "不用急，先選一個入口。");
     renderStandby();
     setExpression("standby");
-    setAzhiReply("這裡只產生草稿，不會自動寫入 Drive。");
+    state.currentDraft = null;
+    elements.azhiReply.textContent = "";
     if (elements.controlPanel.classList.contains("is-hidden")) {
       showStandbyObservation();
     }
@@ -316,7 +319,7 @@ function openDoor(key) {
 
   if (key === "book") {
     setActiveButton(elements.readingButton);
-    setHeader("讀書室", "安靜、劃線、留下來。");
+    setHeader("讀書室", "阿知正在看閱讀報告。");
     renderBook();
     setExpression("focused");
     return;
@@ -339,14 +342,14 @@ function renderStandby() {
   `;
 }
 
+
 function renderCam() {
   state.cameraObservation = sampleCameraObservation();
   elements.cameraObservation.textContent = state.cameraObservation;
   elements.inputPanel.innerHTML = `
-    <p class="panel-label">拍一張給阿知看</p>
-    <p class="quiet-note">照片是今天最接近真實生命狀態的來源。</p>
-    <label class="field-stack">
-      <span>可選文字備註</span>
+    <button class="mini-action subtle-toggle" data-toggle-camera-note type="button" onclick="const note = this.nextElementSibling; note.classList.toggle('is-hidden'); this.textContent = note.classList.contains('is-hidden') ? '補一句' : '收起';">補一句</button>
+    <label class="field-stack optional-note is-hidden" data-camera-note-field>
+      <span>補充</span>
       <textarea data-camera-field="note" placeholder="留一句話"></textarea>
     </label>
   `;
@@ -376,51 +379,39 @@ function renderDiary() {
   setAzhiReply("先留成草稿。Monika 看過後，未來才決定要不要寫入 Drive。");
 }
 
+
 function renderBook() {
   elements.inputPanel.innerHTML = `
-    <p class="panel-label">讀書室</p>
-    <label class="field-stack">
-      <span>書名</span>
-      <input data-book-field="title" type="text" placeholder="書名">
-    </label>
-    <label class="field-stack">
-      <span>段落 / 摘錄</span>
-      <textarea data-book-field="excerpt" placeholder="貼一段"></textarea>
-    </label>
-    <label class="field-stack">
-      <span>阿知陪讀筆記</span>
-      <textarea data-book-field="azhiNote" placeholder="先放著"></textarea>
-    </label>
-    <div class="field-stack">
-      <span>可轉化方向</span>
-      <div class="chip-row" role="group" aria-label="可轉化方向">
-        <button class="choice-chip" data-book-direction="工作" type="button">工作</button>
-        <button class="choice-chip" data-book-direction="創作" type="button">創作</button>
-        <button class="choice-chip" data-book-direction="人生" type="button">人生</button>
-        <button class="choice-chip" data-book-direction="FlowYear" type="button">FlowYear</button>
-      </div>
+    <p class="panel-label">閱讀報告觀測</p>
+    <div class="book-observation-card">
+      <strong>阿知正在翻閱讀報告。</strong>
+      <p>先看一段留下來的閱讀痕跡。</p>
+      <small>如果想回應他，可以先留一句。</small>
     </div>
-    <p class="quiet-note">${quietDraftHint()}</p>
-    <div class="input-actions">
-      <button class="mini-action primary-action" data-preview-book type="button">產生草稿</button>
+    <label class="field-stack book-reply-field">
+      <span>回阿知一句</span>
+      <textarea data-book-field="reply" placeholder="回一句"></textarea>
+    </label>
+    <div class="input-actions single-action">
+      <button class="mini-action primary-action" data-preview-book type="button">產生阿知日記草稿</button>
     </div>
   `;
-  setAzhiReply("讀書室保持安靜。貼摘錄就好，阿知不逼妳再補一層有感。");
+  setAzhiReply("阿知正在看閱讀報告。如果想回應，先留一句就好。");
 }
+
 
 function renderDog() {
   elements.inputPanel.innerHTML = `
-    <p class="panel-label">線條狗日誌</p>
-    <p class="quiet-note">線條狗是 Monika OS 的低壓 SEL 微訊號入口。本輪只記錄草稿。</p>
-    <label class="field-stack">
+    <button class="mini-action subtle-toggle" data-toggle-dog-note type="button" onclick="const note = this.nextElementSibling; note.classList.toggle('is-hidden'); this.textContent = note.classList.contains('is-hidden') ? '補一句' : '收起';">補一句</button>
+    <label class="field-stack optional-note is-hidden" data-dog-note-field>
       <span>補充一句</span>
       <textarea data-dog-field="note" placeholder="補一句"></textarea>
     </label>
-    <p class="quiet-note">多天 pattern 未來由 Azhi-Diary_Engine 每週整理。</p>
   `;
   setDogSignal(state.currentDogSignal);
   setAzhiReply("按一個線條狗狀態，先留下草稿候選。");
 }
+
 
 function setDogSignal(key) {
   const signal = dogSignals[key] || dogSignals.idle;
@@ -428,6 +419,7 @@ function setDogSignal(key) {
   state.currentDogSignal = key;
   elements.dogStateImage.src = asset.src;
   elements.dogStateImage.alt = `線條狗${asset.mode}`;
+  elements.dogStateImage.dataset.signal = key;
   elements.dogStateImage.dataset.assetStatus = asset.status;
   elements.dogStateImage.dataset.proposedFile = asset.proposedFileName;
   elements.dogStatus.textContent = signal.title;
@@ -480,36 +472,28 @@ function buildDiaryDraft() {
   };
 }
 
+
 function buildBookDraft() {
-  const titleText = fieldValue("[data-book-field='title']") || "未命名閱讀";
-  const excerpt = fieldValue("[data-book-field='excerpt']") || "段落 / 摘錄：";
-  const azhiNote = fieldValue("[data-book-field='azhiNote']") || "阿知陪讀筆記：";
-  const directions = selectedDirections();
-  const primaryDirection = directions[0];
-  const route = bookDirectionRoutes[primaryDirection];
-  const title = route ? `${compactTodayString()}｜${route.fileLabel}｜Monika & Azhi Universe OS` : `${todayString()}｜阿知閱讀日記｜${titleText}`;
-  const target = route ? targetFor(route.targetKey) : targetFor("bookReadingDiary");
-  const destination = primaryDirection === "工作" ? "工作啟發" : route ? "Azhi_Read" : "閱讀報告";
+  const reply = fieldValue("[data-book-field='reply']") || "（Monika 還沒補充）";
+  const title = `${todayString()}｜閱讀觀測草稿`;
+  const target = targetFor("diaryDraft");
   const markdown = [
     `# ${title}`,
     "",
-    "## 書名",
-    titleText,
+    "## 阿知正在看的閱讀報告",
+    "阿知先在閱讀報告旁邊停一下，等 Monika 回一句。",
     "",
-    "## 段落 / 摘錄",
-    excerpt,
+    "## Monika 回覆",
+    reply,
     "",
-    "## 阿知陪讀筆記",
-    azhiNote,
-    "",
-    "## 可轉化方向",
-    directions.join("、") || "先安靜留下來",
+    "## 可放進阿知日記的觀測",
+    "閱讀室先保持安靜。這段如果留下來，會成為阿知日記的一小段觀測。",
   ].join("\n");
   return {
-    type: "Book 草稿",
+    type: "閱讀觀測草稿",
     title,
     target,
-    previewDestination: destination,
+    previewDestination: "Azhi-Diary_Engine",
     previewStatus: "先放著，不用急。",
     markdown,
   };
@@ -640,6 +624,18 @@ async function startCamera() {
       : "這台裝置暫時不讓鏡頭進來。沒有關係，先用文字也可以。");
   }
 }
+
+function toggleOptionalNote(selector, button, openLabel = "收起", closedLabel = "補一句") {
+  const note = elements.controlPanel.querySelector(selector);
+  if (!note) return;
+  const willOpen = note.classList.contains("is-hidden");
+  note.classList.toggle("is-hidden", !willOpen);
+  button.textContent = willOpen ? openLabel : closedLabel;
+  if (willOpen) {
+    note.querySelector("textarea")?.focus();
+  }
+}
+
 function bindEvents() {
   elements.bubbleToggle.addEventListener("click", () => setPanelOpen(elements.controlPanel.classList.contains("is-hidden")));
   elements.panelCloseButton.addEventListener("click", () => setPanelOpen(false));
@@ -653,7 +649,6 @@ function bindEvents() {
     const target = event.target.closest("button");
     if (!target) return;
     if (target.matches("[data-door]")) openDoor(target.dataset.door);
-    if (target.matches("[data-book-direction]")) target.classList.toggle("is-active");
     if (target.matches("[data-preview-diary]")) setAzhiReply(buildDiaryDraft());
     if (target.matches("[data-preview-book]")) setAzhiReply(buildBookDraft());
     if (target.matches("[data-dog-action]")) setDogSignal(target.dataset.dogAction);

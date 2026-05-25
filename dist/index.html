@@ -20,11 +20,11 @@
     <meta name="apple-mobile-web-app-title" content="M × A OS">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <title>Monika & Azhi Universe OS</title>
-    <link rel="manifest" href="manifest.webmanifest?v=25-line-dog-assets-3">
-    <link rel="icon" href="assets/icons/icon-192.png?v=25" type="image/png" sizes="192x192">
-    <link rel="icon" href="assets/icons/icon-512.png?v=25" type="image/png" sizes="512x512">
-    <link rel="apple-touch-icon" href="assets/icons/icon-192.png?v=25">
-    <link rel="stylesheet" href="styles.css?v=25-line-dog-assets-3">
+    <link rel="manifest" href="manifest.webmanifest?v=25-mobile-ux-14">
+    <link rel="icon" href="assets/icons/icon-192.png?v=25-mobile-ux-14" type="image/png" sizes="192x192">
+    <link rel="icon" href="assets/icons/icon-512.png?v=25-mobile-ux-14" type="image/png" sizes="512x512">
+    <link rel="apple-touch-icon" href="assets/icons/icon-192.png?v=25-mobile-ux-14">
+    <link rel="stylesheet" href="styles.css?v=25-mobile-ux-14">
   </head>
   <body>
     <main class="phone-shell companion-scene" aria-label="Monika & Azhi Universe OS">
@@ -61,7 +61,7 @@
           <article class="panel dog-contract-panel is-hidden" id="dogContractPanel">
             <p class="panel-label">線條狗微訊號</p>
             <div class="dog-scene">
-              <img class="dog-state-image" id="dogStateImage" src="assets/line-dog/line-dog-idle.png?v=25-line-dog-assets-3" alt="線條狗發呆">
+              <img class="dog-state-image" id="dogStateImage" src="assets/line-dog/line-dog-idle.png?v=25-mobile-ux-14" alt="線條狗發呆">
               <h2 id="dogStatus">線條狗正在發呆。</h2>
               <p id="dogStatusLine">只記錄，不分析。</p>
             </div>
@@ -82,7 +82,7 @@
             <div class="reply-head">
               <p class="panel-label">草稿 preview</p>
             </div>
-            <div id="azhiReply">這裡只產生草稿，不會自動寫入 Drive。</div>
+            <div id="azhiReply"></div>
           </article>
 
           <article class="panel camera-panel is-hidden" id="cameraPanel">
@@ -119,14 +119,14 @@
       <footer class="standby-footer">Monika & Azhi Universe OS — We being.</footer>
     </main>
 
-    <script src="drive-targets.config.js?v=25-line-dog-assets-3"></script>
-    <script src="flowyear-standby-phrases.adapter.js?v=25-line-dog-assets-3"></script>
+    <script src="drive-targets.config.js?v=25-mobile-ux-14"></script>
+    <script src="flowyear-standby-phrases.adapter.js?v=25-mobile-ux-14"></script>
     <script>
       window.AZHI_DIARY_PERSISTENCE = {
         enabled: true,
         endpoint: "https://azhi-companion.vercel.app/api/drive-draft"
       };
     </script>
-    <script src="app.js?v=25-line-dog-assets-3"></script>
+    <script src="app.js?v=25-mobile-ux-14"></script>
   </body>
 </html>

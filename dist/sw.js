@@ -1,23 +1,23 @@
-const CACHE_NAME = "azhi-companion-v25-2-line-dog-assets-3";
+const CACHE_NAME = "azhi-companion-v25-3-mobile-ux-14";
 
 const CORE_ASSETS = [
   "./",
   "./index.html",
-  "./styles.css?v=25-line-dog-assets-3",
-  "./app.js?v=25-line-dog-assets-3",
-  "./drive-targets.config.js?v=25-line-dog-assets-3",
-  "./flowyear-standby-phrases.adapter.js?v=25-line-dog-assets-3",
-  "./standby-phrases.json?v=25-line-dog-assets-3",
-  "./manifest.webmanifest?v=25-line-dog-assets-3",
-  "./assets/line-dog/line-dog-idle.png?v=25-line-dog-assets-3",
-  "./assets/line-dog/line-dog-bath.png?v=25-line-dog-assets-3",
-  "./assets/line-dog/line-dog-sleep.png?v=25-line-dog-assets-3",
-  "./assets/line-dog/line-dog-poop.png?v=25-line-dog-assets-3",
-  "./assets/line-dog/line-dog-hungry.png?v=25-line-dog-assets-3",
-  "./assets/line-dog/line-dog-flat.png?v=25-line-dog-assets-3",
-  "./assets/line-dog/line-dog-werewolf-note.png?v=25-line-dog-assets-3",
-  "./assets/icons/icon-192.png?v=25",
-  "./assets/icons/icon-512.png?v=25"
+  "./styles.css?v=25-mobile-ux-14",
+  "./app.js?v=25-mobile-ux-14",
+  "./drive-targets.config.js?v=25-mobile-ux-14",
+  "./flowyear-standby-phrases.adapter.js?v=25-mobile-ux-14",
+  "./standby-phrases.json?v=25-mobile-ux-14",
+  "./manifest.webmanifest?v=25-mobile-ux-14",
+  "./assets/line-dog/line-dog-idle.png?v=25-mobile-ux-14",
+  "./assets/line-dog/line-dog-bath.png?v=25-mobile-ux-14",
+  "./assets/line-dog/line-dog-sleep.png?v=25-mobile-ux-14",
+  "./assets/line-dog/line-dog-poop.png?v=25-mobile-ux-14",
+  "./assets/line-dog/line-dog-hungry.png?v=25-mobile-ux-14",
+  "./assets/line-dog/line-dog-flat.png?v=25-mobile-ux-14",
+  "./assets/line-dog/line-dog-werewolf-note.png?v=25-mobile-ux-14",
+  "./assets/icons/icon-192.png?v=25-mobile-ux-14",
+  "./assets/icons/icon-512.png?v=25-mobile-ux-14"
 ];
 
 self.addEventListener("install", (event) => {
