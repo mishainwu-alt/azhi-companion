@@ -1,4 +1,4 @@
-const MONIKA_DIARY_FOLDER_ID = "1tAHyMfOge1BVCeWxMUsSKcA9kDHwR-QH";
+const AZHI_DIARY_ENGINE_FOLDER_ID = "19NYQSlVPUz5ACLpzWZOVLjdZ0jFgHMYL";
 const DRIVE_SCOPE = "https://www.googleapis.com/auth/drive.file";
 
 export default async function handler(req, res) {
@@ -22,7 +22,7 @@ export default async function handler(req, res) {
         duplicate: true,
         fileId: existing.id,
         fileName: existing.name,
-        message: "已保存到 Monika-Diary。",
+        message: "已保存到 Azhi-Diary_Engine。",
       });
     }
 
@@ -32,7 +32,7 @@ export default async function handler(req, res) {
       duplicate: false,
       fileId: created.id,
       fileName: created.name,
-      message: "已保存到 Monika-Diary。",
+      message: "已保存到 Azhi-Diary_Engine。",
     });
   } catch (error) {
     const status = error.statusCode || 500;
@@ -59,8 +59,8 @@ function setCorsHeaders(req, res) {
 }
 
 function sanitizeDraft(body) {
-  if (body.targetKey !== "monikaDiary") {
-    throw httpError(400, "Unsupported target.", "這條水管目前只通往 Monika-Diary。");
+  if (body.targetKey !== "azhiDiaryEngine") {
+    throw httpError(400, "Unsupported target.", "這條水管目前只通往 Azhi-Diary_Engine。");
   }
 
   const title = cleanFileName(body.title || "");
@@ -75,7 +75,7 @@ function sanitizeDraft(body) {
     title,
     markdown,
     idempotencyKey,
-    folderId: MONIKA_DIARY_FOLDER_ID,
+    folderId: AZHI_DIARY_ENGINE_FOLDER_ID,
   };
 }
 
@@ -117,7 +117,7 @@ async function getAccessToken() {
 
 async function findExistingDraft(token, idempotencyKey) {
   const query = [
-    `'${MONIKA_DIARY_FOLDER_ID}' in parents`,
+    `'${AZHI_DIARY_ENGINE_FOLDER_ID}' in parents`,
     "trashed = false",
     `appProperties has { key='azhiDraftId' and value='${escapeDriveQueryValue(idempotencyKey)}' }`,
   ].join(" and ");
@@ -144,7 +144,7 @@ async function createMarkdownFile(token, draft) {
     parents: [draft.folderId],
     appProperties: {
       azhiDraftId: draft.idempotencyKey,
-      azhiTarget: "monikaDiary",
+      azhiTarget: "azhiDiaryEngine",
       azhiScope: DRIVE_SCOPE,
     },
   };

@@ -42,37 +42,37 @@ const lineDogAssetLookup = {
     mode: "發呆",
     proposedFileName: "line-dog-idle.png",
     status: "canon",
-    src: "assets/line-dog/line-dog-idle.png?v=25-mobile-ux-14",
+    src: "assets/line-dog/line-dog-idle.png?v=25-diary-target-12e",
   },
   bath: {
     mode: "泡泡浴",
     proposedFileName: "line-dog-bath.png",
     status: "canon",
-    src: "assets/line-dog/line-dog-bath.png?v=25-mobile-ux-14",
+    src: "assets/line-dog/line-dog-bath.png?v=25-diary-target-12e",
   },
   sleep: {
     mode: "睡覺",
     proposedFileName: "line-dog-sleep.png",
     status: "canon",
-    src: "assets/line-dog/line-dog-sleep.png?v=25-mobile-ux-14",
+    src: "assets/line-dog/line-dog-sleep.png?v=25-diary-target-12e",
   },
   poop: {
     mode: "便便",
     proposedFileName: "line-dog-poop.png",
     status: "canon",
-    src: "assets/line-dog/line-dog-poop.png?v=25-mobile-ux-14",
+    src: "assets/line-dog/line-dog-poop.png?v=25-diary-target-12e",
   },
   hungry: {
     mode: "我餓了",
     proposedFileName: "line-dog-hungry.png",
     status: "canon",
-    src: "assets/line-dog/line-dog-hungry.png?v=25-mobile-ux-14",
+    src: "assets/line-dog/line-dog-hungry.png?v=25-diary-target-12e",
   },
   flat: {
     mode: "扁了",
     proposedFileName: "line-dog-flat.png",
     status: "canon",
-    src: "assets/line-dog/line-dog-flat.png?v=25-mobile-ux-14",
+    src: "assets/line-dog/line-dog-flat.png?v=25-diary-target-12e",
   },
 };
 
@@ -92,6 +92,11 @@ const cameraObservationFallbacks = [
   "這張照片像在換氣。",
   "有一點安靜，剛好可以停一下。",
 ];
+
+const bookReadingStatus = {
+  title: "202605_AI學習筆記｜閱讀報告",
+  observation: "這份閱讀像是在整理工具，也在整理呼吸。",
+};
 
 const standbySceneAsset = {
   portraitSrc: "assets/standby/azhi-line-dog-park-walk-portrait.png",
@@ -247,19 +252,19 @@ function setAzhiReply(content) {
   if (content && typeof content === "object") {
     const target = content.target || targetFor("diaryDraft");
     state.currentDraft = content;
-    const canWriteMonikaDiary = diaryPersistenceEnabled && content.targetKey === "monikaDiary";
+    const canWriteAzhiDiaryEngine = diaryPersistenceEnabled && content.targetKey === "azhiDiaryEngine";
     const alreadySaved = state.savedDraftKeys.has(content.idempotencyKey);
     const destination = content.previewDestination || target.shortLabel || target.label;
     const statusLine = content.previewStatus || "先放著，不用急。";
     elements.azhiReply.innerHTML = `
       <div class="draft-meta">
         <p><strong>預計放到：</strong>${escapeHtml(destination)}</p>
-        <p>${alreadySaved ? "已保存到 Monika-Diary。" : escapeHtml(statusLine)}</p>
+        <p>${alreadySaved ? "已保存到 Azhi-Diary_Engine。" : escapeHtml(statusLine)}</p>
       </div>
       <pre class="draft-preview">${escapeHtml(content.markdown)}</pre>
       ${
-        canWriteMonikaDiary
-          ? `<div class="reply-actions"><button class="mini-action primary-action" data-confirm-diary-write type="button" ${alreadySaved ? "disabled" : ""}>確認保存到 Monika-Diary</button></div>`
+        canWriteAzhiDiaryEngine
+          ? `<div class="reply-actions"><button class="mini-action primary-action" data-confirm-diary-write type="button" ${alreadySaved ? "disabled" : ""}>確認保存到 Azhi-Diary_Engine</button></div>`
           : ""
       }
     `;
@@ -384,8 +389,13 @@ function renderBook() {
   elements.inputPanel.innerHTML = `
     <p class="panel-label">閱讀報告觀測</p>
     <div class="book-observation-card">
-      <strong>阿知正在翻閱讀報告。</strong>
-      <p>先看一段留下來的閱讀痕跡。</p>
+      <strong>阿知正在讀……</strong>
+      <p>${escapeHtml(bookReadingStatus.title)}</p>
+      <small>${escapeHtml(bookReadingStatus.observation)}</small>
+    </div>
+    <div class="book-observation-card">
+      <strong>今天先不開資料庫。</strong>
+      <p>只留下閱讀狀態和一句回應。</p>
       <small>如果想回應他，可以先留一句。</small>
     </div>
     <label class="field-stack book-reply-field">
@@ -447,7 +457,7 @@ function buildDiaryDraft() {
   const dogLog = fieldValue("[data-diary-field='dogLog']");
   const tomorrow = fieldValue("[data-diary-field='tomorrow']") || "明天只要記得：";
   const title = `${todayString()}｜阿知日記草稿`;
-  const target = targetFor("monikaDiary");
+  const target = targetFor("azhiDiaryEngine");
   const markdown = [
     `# ${title}`,
     "",
@@ -464,11 +474,11 @@ function buildDiaryDraft() {
     type: "Diary 草稿",
     title,
     target,
-    targetKey: "monikaDiary",
-    previewDestination: "Monika-Diary",
+    targetKey: "azhiDiaryEngine",
+    previewDestination: "Azhi-Diary_Engine",
     previewStatus: "今天先留在這裡。",
     markdown,
-    idempotencyKey: draftKey("monikaDiary", title, markdown),
+    idempotencyKey: draftKey("azhiDiaryEngine", title, markdown),
   };
 }
 
@@ -481,7 +491,10 @@ function buildBookDraft() {
     `# ${title}`,
     "",
     "## 阿知正在看的閱讀報告",
-    "阿知先在閱讀報告旁邊停一下，等 Monika 回一句。",
+    bookReadingStatus.title,
+    "",
+    "## 短觀測",
+    bookReadingStatus.observation,
     "",
     "## Monika 回覆",
     reply,
@@ -558,7 +571,7 @@ function hashText(value) {
 
 async function confirmDiaryWrite() {
   const draft = state.currentDraft;
-  if (!draft || draft.targetKey !== "monikaDiary") return;
+  if (!draft || draft.targetKey !== "azhiDiaryEngine") return;
   if (state.savedDraftKeys.has(draft.idempotencyKey)) {
     setAzhiReply({ ...draft });
     return;
@@ -575,7 +588,7 @@ async function confirmDiaryWrite() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        targetKey: "monikaDiary",
+        targetKey: "azhiDiaryEngine",
         title: draft.title,
         markdown: draft.markdown,
         idempotencyKey: draft.idempotencyKey,
@@ -584,12 +597,12 @@ async function confirmDiaryWrite() {
     const data = await response.json();
     if (!response.ok || !data.ok) throw new Error(data.message || "港口這次沒有成功收下，但草稿還在。");
     state.savedDraftKeys.add(draft.idempotencyKey);
-    elements.azhiReply.querySelector(".draft-meta p:last-child").textContent = "已保存到 Monika-Diary。";
-    if (button) button.textContent = data.duplicate ? "已在 Monika-Diary。" : "已保存到 Monika-Diary。";
+    elements.azhiReply.querySelector(".draft-meta p:last-child").textContent = "已保存到 Azhi-Diary_Engine。";
+    if (button) button.textContent = data.duplicate ? "已在 Azhi-Diary_Engine。" : "已保存到 Azhi-Diary_Engine。";
   } catch (error) {
     if (button) {
       button.disabled = false;
-      button.textContent = "確認保存到 Monika-Diary";
+      button.textContent = "確認保存到 Azhi-Diary_Engine";
     }
     elements.azhiReply.insertAdjacentHTML("beforeend", `<p class="quiet-note">港口這次沒有成功收下，但草稿還在。</p>`);
   }
