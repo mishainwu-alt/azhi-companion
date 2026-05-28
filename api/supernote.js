@@ -2,10 +2,10 @@ const DEFAULT_MODEL = "gpt-4.1-mini";
 const MAX_IMAGE_DATA_URL_CHARS = 8_000_000;
 
 const OBSERVATIONS = {
-  summary: "這頁先靠岸。",
-  selection: "被圈起來的地方，有重力。",
-  observation: "海還在。",
-  next: "先走小一步。",
+  summary: "這頁先整理成回看版。",
+  selection: "Supernote 暫不支援圈選。",
+  observation: "這頁的狀態先靠岸。",
+  next: "先走一個小動作。",
 };
 
 function setCorsHeaders(res) {
@@ -24,21 +24,22 @@ function sliceChars(value, limit) {
   return `${chars.slice(0, Math.max(0, limit - 1)).join("")}…`;
 }
 
-function shapeReply(payload = {}) {
+function shapeReply(payload = {}, action = "") {
   const nextSteps = Array.isArray(payload.nextSteps) ? payload.nextSteps : [];
+  const stepLimit = action === "observation" || action === "next" ? 3 : 5;
   return {
     observation: sliceChars(payload.observation || OBSERVATIONS.summary, 30),
     summary: sliceChars(payload.summary || "阿知先把這頁放在旁邊看，不急著下結論。", 250),
     nextSteps: nextSteps.length
-      ? nextSteps.slice(0, 5).map((step) => sliceChars(step, 15)).filter(Boolean)
+      ? nextSteps.slice(0, stepLimit).map((step) => sliceChars(step, 15)).filter(Boolean)
       : ["留一句", "圈重點", "先停一下"],
   };
 }
 
-function sendJson(res, status, payload) {
+function sendJson(res, status, payload, action = "") {
   setCorsHeaders(res);
   res.setHeader("Content-Type", "application/json; charset=utf-8");
-  res.status(status).json(shapeReply(payload));
+  res.status(status).json(shapeReply(payload, action));
 }
 
 function isSupportedImageDataUrl(value) {
@@ -50,14 +51,18 @@ function buildMockReply({ action, imageDataUrl, imageName, selectedText, text })
   const target = normalizeText(selectedText || text);
   const hasImage = isSupportedImageDataUrl(imageDataUrl);
 
-  if (hasImage) {
+  if (action === "selection") {
     return shapeReply({
-      observation: OBSERVATIONS[action] || "這頁有風。",
-      summary: imageName
-        ? `阿知收到這張單頁匯出：${sliceChars(imageName, 60)}。真正 vision 水管未通時，先保留這份安靜回覆。`
-        : "阿知收到這張單頁匯出。真正 vision 水管未通時，先保留這份安靜回覆。",
-      nextSteps: ["看箭頭", "圈主線", "留一句"],
-    });
+      observation: OBSERVATIONS.selection,
+      summary: "Supernote 目前無法取得使用者圈選區域內容，因此這版不做局部段落分析。GoodNotes 版若能取得圈選內容，再啟用這個入口。",
+      nextSteps: ["改用整頁摘要", "或貼文字"],
+    }, action);
+  }
+
+  if (hasImage) {
+    return buildActionMockReply(action, imageName
+      ? `阿知收到這張單頁匯出：${sliceChars(imageName, 60)}。`
+      : "阿知收到這張單頁匯出。");
   }
 
   if (!target) {
@@ -65,26 +70,37 @@ function buildMockReply({ action, imageDataUrl, imageName, selectedText, text })
       observation: "這頁還沒靠岸。",
       summary: "可以選一張 Supernote 單頁 PNG，或貼一段 TXT / Digest 文字。",
       nextSteps: ["選 PNG", "或貼文字"],
-    });
+    }, action);
   }
 
   const firstLine = target.split(/[。！？.!?]\s*/).find(Boolean) || target;
-  if (action === "observation") {
-    return shapeReply({
-      observation: OBSERVATIONS.observation,
-      summary: "阿知先留一句觀測，不把它變成報告。",
-      nextSteps: ["先放著", "再看一眼"],
-    });
-  }
+  if (action === "observation") return buildActionMockReply("observation", `阿知先看見這句：${sliceChars(firstLine, 80)}。`);
+  if (action === "next") return buildActionMockReply("next", `阿知先看見這句：${sliceChars(firstLine, 80)}。`);
 
+  return buildActionMockReply("summary", `阿知先看見這句：${sliceChars(firstLine, 80)}。`);
+}
+
+function buildActionMockReply(action, sourceLine) {
+  const fallback = {
+    summary: {
+      summary: `${sourceLine}\n1. 主要在談：頁面主題與脈絡。\n2. 核心觀點：先抓主線。\n3. 已形成結論：不硬補。`,
+      nextSteps: ["抓主題", "收核心", "留結論"],
+    },
+    observation: {
+      summary: `${sourceLine}\n書寫狀態：先做低確信觀察。\n內容狀態：找概念跳接與缺口。\n可能卡點：主詞或定義未定。`,
+      nextSteps: ["看密度", "找跳接", "補一格"],
+    },
+    next: {
+      summary: `${sourceLine}\n1. 現在最小下一步：先標一個可做動作。\n2. 交付給別人：補背景、決定、待辦。`,
+      nextSteps: ["標主線", "補背景", "列待辦"],
+    },
+  };
+  const item = fallback[action] || fallback.summary;
   return shapeReply({
     observation: OBSERVATIONS[action] || OBSERVATIONS.summary,
-    summary: `阿知先看見這句：${sliceChars(firstLine, 110)}。先把它收成一段，不急著變成結論。`,
-    nextSteps:
-      action === "next"
-        ? ["標出主線", "補一句感覺", "先不要改稿"]
-        : ["留一句", "圈重點", "先停一下"],
-  });
+    summary: item.summary,
+    nextSteps: item.nextSteps,
+  }, action);
 }
 
 function buildSystemPrompt({ hasImage }) {
@@ -106,11 +122,48 @@ function buildTextPrompt({ action, mode, noteContext, selectedText, text }) {
     `mode: ${mode || "tutor"}`,
     `action: ${action || "summary"}`,
     `noteContext: ${noteContext || "Supernote"}`,
+    buildActionInstruction(action),
     selectedText ? `selectedText:\n${selectedText}` : "",
     text ? `text:\n${text}` : "",
   ]
     .filter(Boolean)
     .join("\n\n");
+}
+
+function buildActionInstruction(action) {
+  const instructions = {
+    summary: [
+      "功能：整頁摘要。",
+      "核心任務：回答「這頁在說什麼？」",
+      "請針對整頁筆記做摘要。保留主題、主要脈絡、已形成的結論。",
+      "不要分析字跡，不要推測情緒，不要延伸太多新想法。",
+      "summary 欄位請包含：1. 這頁主要在談什麼 2. 核心觀點 3. 已形成的結論。",
+      "nextSteps 欄位只放回看提示，不要放大型行動計畫。",
+    ],
+    observation: [
+      "功能：觀測語。",
+      "核心任務：回答「這頁呈現出什麼狀態？」",
+      "請觀察這頁筆記的狀態，而不是做摘要。",
+      "分兩層：1. 書寫狀態觀測：字距、行距、筆壓、塗改、密度、段落節奏。只能低確信推測，不可判定情緒，不可心理診斷。",
+      "2. 內容狀態觀測：概念是否跳接、詞彙是否未定義、推論是否有缺口、事實 / 判斷 / 情緒是否混在一起。",
+      "summary 欄位請包含：書寫狀態、內容狀態、可能卡點。",
+      "nextSteps 欄位請放最小修正建議，最多 3 點。",
+    ],
+    next: [
+      "功能：下一步。",
+      "核心任務：回答「接下來做什麼？」",
+      "請根據這頁筆記提出最小可行下一步。",
+      "不要長篇分析，不要重新摘要整頁，不要新增大型計畫。",
+      "summary 欄位請包含：1. 現在最小下一步 2. 如果要交付給別人，需要整理成什麼。",
+      "nextSteps 欄位最多 3 個行動。",
+    ],
+    selection: [
+      "功能：圈選想法。",
+      "Supernote 版暫不支援取得使用者圈選區域內容。",
+      "請不要做局部段落分析，只回覆此功能暫不支援，並建議改用整頁摘要或貼文字。",
+    ],
+  };
+  return (instructions[action] || instructions.summary).join("\n");
 }
 
 function buildModelInput(input) {
@@ -193,7 +246,7 @@ async function buildModelReply(input) {
     throw new Error("OpenAI response did not contain valid JSON.");
   }
 
-  return shapeReply(parsed);
+  return shapeReply(parsed, input.action);
 }
 
 export default async function handler(req, res) {
@@ -231,16 +284,20 @@ export default async function handler(req, res) {
       observation: "這張圖太大或格式不合。",
       summary: "請改用單頁 PNG / JPG，或匯出 TXT。阿知先不硬吃整本。",
       nextSteps: ["換單頁 PNG", "或貼 TXT"],
-    });
+    }, input.action);
+  }
+
+  if (input.action === "selection") {
+    return sendJson(res, 200, buildMockReply(input), input.action);
   }
 
   if (!process.env.OPENAI_API_KEY) {
-    return sendJson(res, 200, buildMockReply(input));
+    return sendJson(res, 200, buildMockReply(input), input.action);
   }
 
   try {
-    return sendJson(res, 200, await buildModelReply(input));
+    return sendJson(res, 200, await buildModelReply(input), input.action);
   } catch {
-    return sendJson(res, 200, buildMockReply(input));
+    return sendJson(res, 200, buildMockReply(input), input.action);
   }
 }
