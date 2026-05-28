@@ -1,23 +1,23 @@
-const CACHE_NAME = "azhi-companion-v25-5-launch-water-pipes";
+const CACHE_NAME = "azhi-companion-v25-6-exchange-read-source";
 
 const CORE_ASSETS = [
   "./",
   "./index.html",
-  "./styles.css?v=25-launch-water-pipes",
-  "./app.js?v=25-launch-water-pipes",
-  "./drive-targets.config.js?v=25-launch-water-pipes",
-  "./flowyear-standby-phrases.adapter.js?v=25-launch-water-pipes",
-  "./standby-phrases.json?v=25-launch-water-pipes",
-  "./manifest.webmanifest?v=25-launch-water-pipes",
-  "./assets/line-dog/line-dog-idle.png?v=25-launch-water-pipes",
-  "./assets/line-dog/line-dog-bath.png?v=25-launch-water-pipes",
-  "./assets/line-dog/line-dog-sleep.png?v=25-launch-water-pipes",
-  "./assets/line-dog/line-dog-poop.png?v=25-launch-water-pipes",
-  "./assets/line-dog/line-dog-hungry.png?v=25-launch-water-pipes",
-  "./assets/line-dog/line-dog-flat.png?v=25-launch-water-pipes",
-  "./assets/line-dog/line-dog-werewolf-note.png?v=25-launch-water-pipes",
-  "./assets/icons/icon-192.png?v=25-launch-water-pipes",
-  "./assets/icons/icon-512.png?v=25-launch-water-pipes"
+  "./styles.css?v=25-exchange-read-source",
+  "./app.js?v=25-exchange-read-source",
+  "./drive-targets.config.js?v=25-exchange-read-source",
+  "./flowyear-standby-phrases.adapter.js?v=25-exchange-read-source",
+  "./standby-phrases.json?v=25-exchange-read-source",
+  "./manifest.webmanifest?v=25-exchange-read-source",
+  "./assets/line-dog/line-dog-idle.png?v=25-exchange-read-source",
+  "./assets/line-dog/line-dog-bath.png?v=25-exchange-read-source",
+  "./assets/line-dog/line-dog-sleep.png?v=25-exchange-read-source",
+  "./assets/line-dog/line-dog-poop.png?v=25-exchange-read-source",
+  "./assets/line-dog/line-dog-hungry.png?v=25-exchange-read-source",
+  "./assets/line-dog/line-dog-flat.png?v=25-exchange-read-source",
+  "./assets/line-dog/line-dog-werewolf-note.png?v=25-exchange-read-source",
+  "./assets/icons/icon-192.png?v=25-exchange-read-source",
+  "./assets/icons/icon-512.png?v=25-exchange-read-source"
 ];
 
 self.addEventListener("install", (event) => {

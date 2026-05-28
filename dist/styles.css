@@ -180,7 +180,7 @@ button {
   height: 56px;
   border: 1.6px solid var(--line-strong);
   border-radius: 8px;
-  background: rgba(255, 250, 241, 0.84) url("assets/icons/icon-192.png?v=25-launch-water-pipes") center / cover no-repeat;
+  background: rgba(255, 250, 241, 0.84) url("assets/icons/icon-192.png?v=25-exchange-read-source") center / cover no-repeat;
   box-shadow: var(--shadow);
   overflow: hidden;
 }
@@ -571,6 +571,28 @@ p {
 
 .draft-meta p {
   margin: 0;
+}
+
+.read-source-note {
+  margin: 0 0 10px;
+  border: 1px solid rgba(33, 31, 27, 0.1);
+  border-radius: 8px;
+  padding: 9px 10px;
+  background: rgba(246, 248, 244, 0.88);
+  color: #3a3731;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.read-source-note ul {
+  display: grid;
+  gap: 4px;
+  margin: 6px 0 0;
+  padding-left: 18px;
+}
+
+.read-source-fallback {
+  margin-bottom: 10px;
 }
 
 .draft-preview {

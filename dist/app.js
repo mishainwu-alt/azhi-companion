@@ -1,4 +1,4 @@
-const launchAssetVersion = "v=25-launch-water-pipes";
+const launchAssetVersion = "v=25-exchange-read-source";
 
 const bathSongCatalog = [
   {
@@ -181,6 +181,8 @@ const driveTargets = window.AZHI_DRIVE_TARGETS || {};
 const diaryPersistenceConfig = window.AZHI_DIARY_PERSISTENCE || {};
 const diaryPersistenceEnabled = diaryPersistenceConfig.enabled === true;
 const diaryPersistenceEndpoint = diaryPersistenceConfig.endpoint || "/api/drive-draft";
+const diaryReadSourceEndpoint = diaryPersistenceConfig.readSourceEndpoint || "/api/diary-read-source";
+const diaryReadSourceFallback = "這次還沒讀到 Monika-Diary，阿知先只留下今天的草稿。";
 
 const state = {
   activeDoor: "standby",
@@ -191,6 +193,7 @@ const state = {
   standbySceneReady: false,
   cameraObservation: "",
   currentDraft: null,
+  diaryReadSources: [],
   savedDraftKeys: new Set(),
 };
 
@@ -322,11 +325,13 @@ function setAzhiReply(content) {
     const alreadySaved = state.savedDraftKeys.has(content.idempotencyKey);
     const destination = content.previewDestination || target.shortLabel || target.label;
     const statusLine = content.previewStatus || "先放著，不用急。";
+    const readSourceBlock = renderDiaryReadSourceBlock(content);
     elements.azhiReply.innerHTML = `
       <div class="draft-meta">
         <p><strong>預計放到：</strong>${escapeHtml(destination)}</p>
         <p>${alreadySaved ? "已保存到 Azhi-Diary_Engine。" : escapeHtml(statusLine)}</p>
       </div>
+      ${readSourceBlock}
       <pre class="draft-preview">${escapeHtml(content.markdown)}</pre>
       ${
         canWriteAzhiDiaryEngine
@@ -338,6 +343,25 @@ function setAzhiReply(content) {
   }
   state.currentDraft = null;
   elements.azhiReply.textContent = content;
+}
+
+function renderDiaryReadSourceBlock(content) {
+  if (content.targetKey !== "azhiDiaryEngine") return "";
+  const sources = Array.isArray(content.readSources) ? content.readSources.slice(0, 3) : [];
+  if (sources.length) {
+    return `
+      <div class="read-source-note">
+        <strong>阿知參考了：</strong>
+        <ul>
+          ${sources.map((source) => `<li>${escapeHtml(source.name)}</li>`).join("")}
+        </ul>
+      </div>
+    `;
+  }
+  if (content.readSourceMessage) {
+    return `<p class="quiet-note read-source-fallback">${escapeHtml(content.readSourceMessage)}</p>`;
+  }
+  return "";
 }
 
 function escapeHtml(value) {
@@ -528,14 +552,21 @@ function selectedDirections() {
   return [...document.querySelectorAll("[data-book-direction].is-active")].map((button) => button.dataset.bookDirection);
 }
 
-function buildDiaryDraft() {
+function buildDiaryDraft(readSources = [], readSourceMessage = "") {
   const azhiObservation = fieldValue("[data-diary-field='azhiObservation']") || "今天阿知看見的是：";
   const dogLog = fieldValue("[data-diary-field='dogLog']");
   const tomorrow = fieldValue("[data-diary-field='tomorrow']") || "明天只要記得：";
   const title = `${todayString()}｜阿知日記草稿`;
   const target = targetFor("azhiDiaryEngine");
+  const sources = Array.isArray(readSources) ? readSources.slice(0, 3) : [];
+  const sourceLines = sources.length
+    ? sources.map((source) => `- ${source.name}`)
+    : [readSourceMessage || diaryReadSourceFallback];
   const markdown = [
     `# ${title}`,
+    "",
+    "## 0. Monika-Diary 參考",
+    ...sourceLines,
     "",
     "## 1. 阿知今日觀測",
     azhiObservation,
@@ -553,6 +584,8 @@ function buildDiaryDraft() {
     targetKey: "azhiDiaryEngine",
     previewDestination: "Azhi-Diary_Engine",
     previewStatus: "今天先留在這裡。",
+    readSources: sources,
+    readSourceMessage: sources.length ? "" : (readSourceMessage || diaryReadSourceFallback),
     markdown,
     idempotencyKey: draftKey("azhiDiaryEngine", title, markdown),
   };
@@ -700,6 +733,36 @@ async function confirmDiaryWrite() {
   }
 }
 
+async function fetchDiaryReadSources() {
+  try {
+    const response = await fetch(diaryReadSourceEndpoint, { method: "GET" });
+    const data = await response.json().catch(() => ({}));
+    const sources = Array.isArray(data.sources) ? data.sources.slice(0, 3) : [];
+    if (!response.ok || !data.ok || !sources.length) {
+      return { sources: [], message: data.message || diaryReadSourceFallback };
+    }
+    return { sources, message: data.message || "" };
+  } catch (error) {
+    return { sources: [], message: diaryReadSourceFallback };
+  }
+}
+
+async function previewDiaryDraft(button) {
+  if (button) {
+    button.disabled = true;
+    button.textContent = "讀 Monika-Diary...";
+  }
+
+  const result = await fetchDiaryReadSources();
+  state.diaryReadSources = result.sources;
+  setAzhiReply(buildDiaryDraft(result.sources, result.message));
+
+  if (button) {
+    button.disabled = false;
+    button.textContent = "產生草稿";
+  }
+}
+
 async function startCamera() {
   if (!elements.cameraPreview) return;
 
@@ -754,7 +817,7 @@ function bindEvents() {
     const target = event.target.closest("button");
     if (!target) return;
     if (target.matches("[data-door]")) openDoor(target.dataset.door);
-    if (target.matches("[data-preview-diary]")) setAzhiReply(buildDiaryDraft());
+    if (target.matches("[data-preview-diary]")) previewDiaryDraft(target);
     if (target.matches("[data-preview-book]")) setAzhiReply(buildBookDraft());
     if (target.matches("[data-dog-action]")) setDogSignal(target.dataset.dogAction);
     if (target.matches("[data-confirm-diary-write]")) confirmDiaryWrite();
