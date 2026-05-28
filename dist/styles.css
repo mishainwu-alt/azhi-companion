@@ -180,7 +180,7 @@ button {
   height: 56px;
   border: 1.6px solid var(--line-strong);
   border-radius: 8px;
-  background: rgba(255, 250, 241, 0.84) url("assets/icons/icon-192.png?v=25-diary-target-12e") center / cover no-repeat;
+  background: rgba(255, 250, 241, 0.84) url("assets/icons/icon-192.png?v=25-launch-water-pipes") center / cover no-repeat;
   box-shadow: var(--shadow);
   overflow: hidden;
 }
@@ -326,6 +326,37 @@ p {
   min-height: 108px;
   font-size: 16px;
   line-height: 1.55;
+}
+
+.bath-song-panel.is-hidden {
+  display: none;
+}
+
+.bath-marquee {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+  padding: 8px 10px;
+  overflow-x: auto;
+  border: 1px solid rgba(33, 31, 27, 0.1);
+  border-radius: 8px;
+  background: rgba(255, 254, 250, 0.74);
+  white-space: nowrap;
+}
+
+.bath-marquee span,
+.bath-marquee small {
+  flex: 0 0 auto;
+}
+
+.bath-marquee span {
+  font-weight: 700;
+}
+
+.bath-marquee small {
+  color: var(--muted);
 }
 
 .control-panel[data-active-door="cam"] .input-panel,

@@ -1,3 +1,46 @@
+const launchAssetVersion = "v=25-launch-water-pipes";
+
+const bathSongCatalog = [
+  {
+    title: "飛吧，乘着金色的翅膀",
+    subtitle: "Va, pensiero sull'ali dorate",
+    marquee: ["金色翅膀", "慢慢飛", "今天先降載"],
+  },
+  {
+    title: "E lucevan le stelle",
+    subtitle: "星光滿天",
+    marquee: ["星光滿天", "先把燈調暗", "泡泡慢一點"],
+  },
+  {
+    title: "夜望星空思情郎",
+    subtitle: "夜色裡的一點遠方",
+    marquee: ["夜色很輕", "心事先浮著", "不用追答案"],
+  },
+  {
+    title: "Carmina Burana 布蘭詩歌",
+    subtitle: "命運之輪先放旁邊",
+    marquee: ["命運先泡澡", "世界音量轉小", "鼓點留在門外"],
+  },
+  {
+    title: "Isle of Capri 卡布里島",
+    subtitle: "把今天放到小島上",
+    marquee: ["卡布里島", "水面亮一下", "先去海邊"],
+  },
+];
+
+function dailyCatalogItem(items, salt = "") {
+  const key = `${todayString()}:${salt}`;
+  let hash = 0;
+  for (let index = 0; index < key.length; index += 1) {
+    hash = (Math.imul(hash, 31) + key.charCodeAt(index)) >>> 0;
+  }
+  return items[hash % items.length];
+}
+
+function todayBathSong() {
+  return dailyCatalogItem(bathSongCatalog, "bath-song");
+}
+
 const dogSignals = {
   idle: {
     label: "發呆",
@@ -8,7 +51,7 @@ const dogSignals = {
   bath: {
     label: "泡泡浴",
     title: "線條狗進泡泡浴。",
-    line: "今日泡泡浴 BGM：Carmina Burana 布蘭詩歌",
+    line: "今日泡泡浴 BGM 讀取中。",
     diaryLine: "泡泡浴：進入 de-escalate，今天先降載。",
   },
   sleep: {
@@ -42,37 +85,37 @@ const lineDogAssetLookup = {
     mode: "發呆",
     proposedFileName: "line-dog-idle.png",
     status: "canon",
-    src: "assets/line-dog/line-dog-idle.png?v=25-diary-target-12e",
+    src: `assets/line-dog/line-dog-idle.png?${launchAssetVersion}`,
   },
   bath: {
     mode: "泡泡浴",
     proposedFileName: "line-dog-bath.png",
     status: "canon",
-    src: "assets/line-dog/line-dog-bath.png?v=25-diary-target-12e",
+    src: `assets/line-dog/line-dog-bath.png?${launchAssetVersion}`,
   },
   sleep: {
     mode: "睡覺",
     proposedFileName: "line-dog-sleep.png",
     status: "canon",
-    src: "assets/line-dog/line-dog-sleep.png?v=25-diary-target-12e",
+    src: `assets/line-dog/line-dog-sleep.png?${launchAssetVersion}`,
   },
   poop: {
     mode: "便便",
     proposedFileName: "line-dog-poop.png",
     status: "canon",
-    src: "assets/line-dog/line-dog-poop.png?v=25-diary-target-12e",
+    src: `assets/line-dog/line-dog-poop.png?${launchAssetVersion}`,
   },
   hungry: {
     mode: "我餓了",
     proposedFileName: "line-dog-hungry.png",
     status: "canon",
-    src: "assets/line-dog/line-dog-hungry.png?v=25-diary-target-12e",
+    src: `assets/line-dog/line-dog-hungry.png?${launchAssetVersion}`,
   },
   flat: {
     mode: "扁了",
     proposedFileName: "line-dog-flat.png",
     status: "canon",
-    src: "assets/line-dog/line-dog-flat.png?v=25-diary-target-12e",
+    src: `assets/line-dog/line-dog-flat.png?${launchAssetVersion}`,
   },
 };
 
@@ -93,10 +136,33 @@ const cameraObservationFallbacks = [
   "有一點安靜，剛好可以停一下。",
 ];
 
-const bookReadingStatus = {
-  title: "202605_AI學習筆記｜閱讀報告",
-  observation: "這份閱讀像是在整理工具，也在整理呼吸。",
-};
+const bookReportCatalog = [
+  {
+    title: "遊戲化實戰全書",
+    status: "暫停",
+    score: "7",
+    sourceFile: "2026-04｜暫停｜7｜《遊戲化實戰全書》.csv",
+    observation: "這本像是在拆遊戲，也在拆動機的按鈕。",
+  },
+  {
+    title: "影響力習慣",
+    status: "完讀",
+    score: "3",
+    sourceFile: "2026-03｜完讀｜3｜《影響力習慣》.csv",
+    observation: "這份閱讀留下的是阻力，不只是方法。",
+  },
+  {
+    title: "厭世機器人I",
+    status: "完讀",
+    score: "10",
+    sourceFile: "2023-02｜完讀｜10｜《厭世機器人I》.csv",
+    observation: "有些機器人的厭世，比人類還誠實。",
+  },
+];
+
+function currentBookReport() {
+  return bookReportCatalog[0];
+}
 
 const standbySceneAsset = {
   portraitSrc: "assets/standby/azhi-line-dog-park-walk-portrait.png",
@@ -386,12 +452,13 @@ function renderDiary() {
 
 
 function renderBook() {
+  const report = currentBookReport();
   elements.inputPanel.innerHTML = `
     <p class="panel-label">閱讀報告觀測</p>
     <div class="book-observation-card">
-      <strong>阿知正在讀……</strong>
-      <p>${escapeHtml(bookReadingStatus.title)}</p>
-      <small>${escapeHtml(bookReadingStatus.observation)}</small>
+      <strong>阿知正在讀《${escapeHtml(report.title)}》</strong>
+      <p>${escapeHtml(report.status)}｜評分 ${escapeHtml(report.score)}｜read-only source</p>
+      <small>${escapeHtml(report.observation)}</small>
     </div>
     <div class="book-observation-card">
       <strong>今天先不開資料庫。</strong>
@@ -406,12 +473,13 @@ function renderBook() {
       <button class="mini-action primary-action" data-preview-book type="button">產生阿知日記草稿</button>
     </div>
   `;
-  setAzhiReply("阿知正在看閱讀報告。如果想回應，先留一句就好。");
+  setAzhiReply(`阿知正在讀《${report.title}》。如果想回應，先留一句就好。`);
 }
 
 
 function renderDog() {
   elements.inputPanel.innerHTML = `
+    <div id="bathSongPanel" class="bath-song-panel is-hidden"></div>
     <button class="mini-action subtle-toggle" data-toggle-dog-note type="button" onclick="const note = this.nextElementSibling; note.classList.toggle('is-hidden'); this.textContent = note.classList.contains('is-hidden') ? '補一句' : '收起';">補一句</button>
     <label class="field-stack optional-note is-hidden" data-dog-note-field>
       <span>補充一句</span>
@@ -426,6 +494,7 @@ function renderDog() {
 function setDogSignal(key) {
   const signal = dogSignals[key] || dogSignals.idle;
   const asset = lineDogAssetLookup[key] || lineDogAssetLookup.idle;
+  const bathSong = todayBathSong();
   state.currentDogSignal = key;
   elements.dogStateImage.src = asset.src;
   elements.dogStateImage.alt = `線條狗${asset.mode}`;
@@ -433,7 +502,14 @@ function setDogSignal(key) {
   elements.dogStateImage.dataset.assetStatus = asset.status;
   elements.dogStateImage.dataset.proposedFile = asset.proposedFileName;
   elements.dogStatus.textContent = signal.title;
-  elements.dogStatusLine.textContent = signal.line;
+  elements.dogStatusLine.textContent = key === "bath"
+    ? `今日泡泡浴 BGM：${bathSong.title}`
+    : signal.line;
+  const bathSongPanel = document.querySelector("#bathSongPanel");
+  if (bathSongPanel) {
+    bathSongPanel.classList.toggle("is-hidden", key !== "bath");
+    bathSongPanel.innerHTML = key === "bath" ? renderBathMarquee() : "";
+  }
   document.querySelectorAll("[data-dog-action]").forEach((button) => {
     const active = button.dataset.dogAction === key;
     button.classList.toggle("is-active", active);
@@ -484,6 +560,7 @@ function buildDiaryDraft() {
 
 
 function buildBookDraft() {
+  const report = currentBookReport();
   const reply = fieldValue("[data-book-field='reply']") || "（Monika 還沒補充）";
   const title = `${todayString()}｜閱讀觀測草稿`;
   const target = targetFor("diaryDraft");
@@ -491,10 +568,13 @@ function buildBookDraft() {
     `# ${title}`,
     "",
     "## 阿知正在看的閱讀報告",
-    bookReadingStatus.title,
+    `《${report.title}》`,
+    "",
+    "## 來源",
+    report.sourceFile,
     "",
     "## 短觀測",
-    bookReadingStatus.observation,
+    report.observation,
     "",
     "## Monika 回覆",
     reply,
@@ -514,13 +594,15 @@ function buildBookDraft() {
 
 function buildDogDraft() {
   const signal = dogSignals[state.currentDogSignal] || dogSignals.idle;
+  const bathSong = todayBathSong();
   const note = fieldValue("[data-dog-field='note']");
   const title = `${todayString()}｜線條狗觀察日誌草稿`;
   const target = targetFor("lineDogObservationDiary");
   const log = [
     `${signal.label}：${signal.diaryLine}`,
     note ? `補充：${note}` : "",
-    signal.label === "泡泡浴" ? "今日泡泡浴 BGM：Carmina Burana 布蘭詩歌" : "",
+    signal.label === "泡泡浴" ? `今日泡泡浴 BGM：${bathSong.title}（${bathSong.subtitle}）` : "",
+    signal.label === "泡泡浴" ? `短句：${bathSong.marquee.join(" / ")}` : "",
   ].filter(Boolean).join("\n");
   state.dogLogCandidate = log;
   const markdown = [
@@ -540,6 +622,16 @@ function buildDogDraft() {
     previewStatus: "只記錄，不分析。",
     markdown,
   };
+}
+
+function renderBathMarquee() {
+  const bathSong = todayBathSong();
+  return `
+    <div class="bath-marquee" aria-label="今日泡泡浴短句">
+      <span>今日泡泡浴 BGM：${escapeHtml(bathSong.title)}</span>
+      ${bathSong.marquee.map((item) => `<small>${escapeHtml(item)}</small>`).join("")}
+    </div>
+  `;
 }
 
 function sampleCameraObservation() {
